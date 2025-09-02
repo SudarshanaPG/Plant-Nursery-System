@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1752569247020,
+    "name": "cactus",
+    "size": "Width: 15 inches, Height: 55 inches",
+    "care": "Needs sunlight weekly at least one, and water it well",
+    "price": 500,
+    "imagePath": "/uploads/1752569247008-plant4.jfif",
+    "sellerName": "raosudarshan@gmail.com",
+    "sold": 2,
+    "stock": 0
+  },
+  {
+    "id": 1753072827954,
+    "name": "OAS penny worth Dollar plant",
+    "size": "Width: 5 cm, Height: 10 cm",
+    "care": "It is a plastic cup grown plant. It won't survive for a long time, maximum life expectancy is 1 month, so it is more like a decoration, but one still needs to water it if you want it to look good and fresh (at least 2 times a day) as long as possible",
+    "price": 10,
+    "imagePath": "/uploads/1753072827949-81tJ40sAUEL._UF1000,1000_QL80_.jpg",
+    "sellerName": "raosudarshan@gmail.com",
+    "sold": 4,
+    "stock": 4
+  }
+]

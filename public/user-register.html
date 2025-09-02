@@ -1,0 +1,37 @@
+<!-- user-register.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register as Customer</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <h1>Customer Registration</h1>
+    <nav>
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="plants.html" class="nav-link">Browse Plants</a>
+    </nav>
+  </header>
+
+  <section class="seller-form">
+    <form id="registerForm" enctype="multipart/form-data">
+      <h2 style="text-align:center;">Join Us!</h2>
+      <input type="text" id="name" placeholder="Full Name" required>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <input type="text" id="phone" placeholder="Phone Number" required>
+      <label for="photo">Upload Your Profile Photo:</label>
+      <input type="file" id="photo" accept="image/*" title="Upload a clear photo of yourself" required>
+      <button type="submit" class="cta-button">Register</button>
+      <p style="text-align:center;">Already have an account? <a href="user-login.html">Login here</a></p>
+      <p id="registerError" style="color:red; text-align:center;"></p>
+    </form>
+  </section>
+
+  <script src="js/user-register.js"></script>
+</body>
+</html>

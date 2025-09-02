@@ -1,0 +1,326 @@
+[
+  {
+    "plantId": 1752569247020,
+    "quantity": 1,
+    "buyerAddress": "No 113, 1st Block, 7th Main, 6th Cross Srinivasnagar, Banashankari 1st Stage, Bengaluru, Karnataka 560050",
+    "paymentMethod": "COD"
+  },
+  {
+    "plantId": 1753072827954,
+    "quantity": 1,
+    "buyerAddress": "No 113, 1st Block, 7th Main, 6th Cross Srinivasnagar, Banashankari 1st Stage, Bengaluru, Karnataka 560050",
+    "paymentMethod": "Cash on Delivery"
+  },
+  {
+    "plantId": 1753072827954,
+    "quantity": 1,
+    "buyerAddress": "No 113, 1st Block, 7th Main, 6th Cross Srinivasnagar, Banashankari 1st Stage, Bengaluru, Karnataka 560050",
+    "paymentMethod": "Cash on Delivery"
+  },
+  {
+    "plantId": 1753072827954,
+    "quantity": 1,
+    "buyerAddress": "No 113, 1st Block, 7th Main, 6th Cross Srinivasnagar, Banashankari 1st Stage, Bengaluru, Karnataka 560050",
+    "paymentMethod": "Cash on Delivery"
+  },
+  {
+    "id": 1753735525004,
+    "user": "rg16101976@gmail.com",
+    "address": "W Anjaneya Temple St, Gandhi Bazaar, Basavanagudi, Bengaluru, Karnataka 560004",
+    "payment": "Cash on Delivery",
+    "items": [
+      {
+        "id": 1752569247020,
+        "name": "cactus",
+        "size": "Width: 15 inches, Height: 55 inches",
+        "care": "Needs sunlight weekly at least one, and water it well",
+        "price": 500,
+        "imagePath": "/uploads/1752569247008-plant4.jfif",
+        "sellerName": "raosudarshan@gmail.com",
+        "sold": 1,
+        "stock": 8,
+        "quantity": 1,
+        "subtotal": 500
+      },
+      {
+        "id": 1753072827954,
+        "name": "OAS penny worth Dollar plant",
+        "size": "Width: 5 cm, Height: 10 cm",
+        "quantity": 4,
+        "care": "It is a plastic cup grown plant. It won't survive for a long time, maximum life expectancy is 1 month, so it is more like a decoration, but one still needs to water it if you want it to look good and fresh (at least 2 times a day) as long as possible",
+        "price": 10,
+        "imagePath": "/uploads/1753072827949-81tJ40sAUEL._UF1000,1000_QL80_.jpg",
+        "sellerName": "raosudarshan@gmail.com",
+        "sold": 3,
+        "stock": 13,
+        "subtotal": 40
+      }
+    ],
+    "total": 540,
+    "timestamp": "2025-07-28T20:45:25.004Z"
+  },
+  {
+    "id": 1753739475015,
+    "user": "rg16101976@gmail.com",
+    "address": "W Anjaneya Temple St, Gandhi Bazaar, Basavanagudi, Bengaluru, Karnataka 560004",
+    "payment": "Cash on Delivery",
+    "items": [
+      {
+        "id": 1752569247020,
+        "name": "cactus",
+        "size": "Width: 15 inches, Height: 55 inches",
+        "care": "Needs sunlight weekly at least one, and water it well",
+        "price": 500,
+        "imagePath": "/uploads/1752569247008-plant4.jfif",
+        "sellerName": "raosudarshan@gmail.com",
+        "sold": 1,
+        "stock": 7,
+        "quantity": 1,
+        "subtotal": 500
+      },
+      {
+        "id": 1753072827954,
+        "name": "OAS penny worth Dollar plant",
+        "size": "Width: 5 cm, Height: 10 cm",
+        "care": "It is a plastic cup grown plant. It won't survive for a long time, maximum life expectancy is 1 month, so it is more like a decoration, but one still needs to water it if you want it to look good and fresh (at least 2 times a day) as long as possible",
+        "price": 10,
+        "imagePath": "/uploads/1753072827949-81tJ40sAUEL._UF1000,1000_QL80_.jpg",
+        "sellerName": "raosudarshan@gmail.com",
+        "sold": 3,
+        "stock": 12,
+        "quantity": 1,
+        "subtotal": 10
+      }
+    ],
+    "total": 510,
+    "timestamp": "2025-07-28T21:51:15.015Z"
+  },
+  {
+    "id": 1753741519453,
+    "user": "rg16101976@gmail.com",
+    "address": "W Anjaneya Temple St, Gandhi Bazaar, Basavanagudi, Bengaluru, Karnataka 560004",
+    "payment": "Cash on Delivery",
+    "items": [
+      {
+        "id": 1753072827954,
+        "name": "OAS penny worth Dollar plant",
+        "size": "Width: 5 cm, Height: 10 cm",
+        "care": "It is a plastic cup grown plant. It won't survive for a long time, maximum life expectancy is 1 month, so it is more like a decoration, but one still needs to water it if you want it to look good and fresh (at least 2 times a day) as long as possible",
+        "price": 10,
+        "imagePath": "/uploads/1753072827949-81tJ40sAUEL._UF1000,1000_QL80_.jpg",
+        "sellerName": "raosudarshan@gmail.com",
+        "sold": 3,
+        "stock": 11,
+        "quantity": 1,
+        "subtotal": 10
+      },
+      {
+        "id": 1752569247020,
+        "name": "cactus",
+        "size": "Width: 15 inches, Height: 55 inches",
+        "care": "Needs sunlight weekly at least one, and water it well",
+        "price": 500,
+        "imagePath": "/uploads/1752569247008-plant4.jfif",
+        "sellerName": "raosudarshan@gmail.com",
+        "sold": 1,
+        "stock": 6,
+        "quantity": 1,
+        "subtotal": 500
+      }
+    ],
+    "total": 510,
+    "timestamp": "2025-07-28T22:25:19.453Z"
+  },
+  {
+    "id": 1753763992073,
+    "user": "rg16101976@gmail.com",
+    "address": "53/1, W Anjaneya Temple St, Gandhi Bazaar, Basavanagudi, Bengaluru, Karnataka 560004",
+    "payment": "Cash on Delivery",
+    "items": [
+      {
+        "id": 1753072827954,
+        "name": "OAS penny worth Dollar plant",
+        "size": "Width: 5 cm, Height: 10 cm",
+        "care": "It is a plastic cup grown plant. It won't survive for a long time, maximum life expectancy is 1 month, so it is more like a decoration, but one still needs to water it if you want it to look good and fresh (at least 2 times a day) as long as possible",
+        "price": 10,
+        "imagePath": "/uploads/1753072827949-81tJ40sAUEL._UF1000,1000_QL80_.jpg",
+        "sellerName": "raosudarshan@gmail.com",
+        "sold": 3,
+        "stock": 10,
+        "quantity": 1,
+        "subtotal": 10
+      },
+      {
+        "id": 1752569247020,
+        "name": "cactus",
+        "size": "Width: 15 inches, Height: 55 inches",
+        "care": "Needs sunlight weekly at least one, and water it well",
+        "price": 500,
+        "imagePath": "/uploads/1752569247008-plant4.jfif",
+        "sellerName": "raosudarshan@gmail.com",
+        "sold": 1,
+        "stock": 5,
+        "quantity": 1,
+        "subtotal": 500
+      }
+    ],
+    "total": 510,
+    "timestamp": "2025-07-29T04:39:52.073Z"
+  },
+  {
+    "id": 1754008109607,
+    "user": "rg16101976@gmail.com",
+    "address": "100 Feet, Ring Rd, Banashankari 3rd Stage, Banashankari, Bengaluru, Karnataka 560085",
+    "payment": "Cash on Delivery",
+    "items": [
+      {
+        "id": 1752569247020,
+        "name": "cactus",
+        "size": "Width: 15 inches, Height: 55 inches",
+        "care": "Needs sunlight weekly at least one, and water it well",
+        "price": 500,
+        "imagePath": "/uploads/1752569247008-plant4.jfif",
+        "sellerName": "raosudarshan@gmail.com",
+        "sold": 1,
+        "stock": 4,
+        "quantity": 1,
+        "subtotal": 500
+      },
+      {
+        "id": 1753072827954,
+        "name": "OAS penny worth Dollar plant",
+        "size": "Width: 5 cm, Height: 10 cm",
+        "care": "It is a plastic cup grown plant. It won't survive for a long time, maximum life expectancy is 1 month, so it is more like a decoration, but one still needs to water it if you want it to look good and fresh (at least 2 times a day) as long as possible",
+        "price": 10,
+        "imagePath": "/uploads/1753072827949-81tJ40sAUEL._UF1000,1000_QL80_.jpg",
+        "sellerName": "raosudarshan@gmail.com",
+        "sold": 3,
+        "stock": 8,
+        "quantity": 2,
+        "subtotal": 20
+      }
+    ],
+    "total": 520,
+    "timestamp": "2025-08-01T00:28:29.607Z"
+  },
+  {
+    "id": 1754009692852,
+    "user": "rg16101976@gmail.com",
+    "address": "100 Feet, Ring Rd, Banashankari 3rd Stage, Banashankari, Bengaluru, Karnataka 560085",
+    "payment": "Cash on Delivery",
+    "items": [
+      {
+        "id": 1752569247020,
+        "name": "cactus",
+        "size": "Width: 15 inches, Height: 55 inches",
+        "care": "Needs sunlight weekly at least one, and water it well",
+        "price": 500,
+        "imagePath": "/uploads/1752569247008-plant4.jfif",
+        "sellerName": "raosudarshan@gmail.com",
+        "sold": 1,
+        "stock": 3,
+        "quantity": 1,
+        "subtotal": 500
+      },
+      {
+        "id": 1753072827954,
+        "name": "OAS penny worth Dollar plant",
+        "size": "Width: 5 cm, Height: 10 cm",
+        "care": "It is a plastic cup grown plant. It won't survive for a long time, maximum life expectancy is 1 month, so it is more like a decoration, but one still needs to water it if you want it to look good and fresh (at least 2 times a day) as long as possible",
+        "price": 10,
+        "imagePath": "/uploads/1753072827949-81tJ40sAUEL._UF1000,1000_QL80_.jpg",
+        "sellerName": "raosudarshan@gmail.com",
+        "sold": 3,
+        "stock": 7,
+        "quantity": 1,
+        "subtotal": 10
+      }
+    ],
+    "total": 510,
+    "timestamp": "2025-08-01T00:54:52.852Z"
+  },
+  {
+    "id": 1754020054895,
+    "user": "Guest",
+    "address": "fake address",
+    "payment": "Cash on Delivery",
+    "items": [
+      {
+        "id": 1752569247020,
+        "name": "cactus",
+        "size": "Width: 15 inches, Height: 55 inches",
+        "care": "Needs sunlight weekly at least one, and water it well",
+        "price": 500,
+        "imagePath": "/uploads/1752569247008-plant4.jfif",
+        "sellerName": "raosudarshan@gmail.com",
+        "sold": 1,
+        "stock": 2,
+        "quantity": 1,
+        "subtotal": 500
+      },
+      {
+        "id": 1753072827954,
+        "name": "OAS penny worth Dollar plant",
+        "size": "Width: 5 cm, Height: 10 cm",
+        "care": "It is a plastic cup grown plant. It won't survive for a long time, maximum life expectancy is 1 month, so it is more like a decoration, but one still needs to water it if you want it to look good and fresh (at least 2 times a day) as long as possible",
+        "price": 10,
+        "imagePath": "/uploads/1753072827949-81tJ40sAUEL._UF1000,1000_QL80_.jpg",
+        "sellerName": "raosudarshan@gmail.com",
+        "sold": 3,
+        "stock": 6,
+        "quantity": 1,
+        "subtotal": 10
+      }
+    ],
+    "total": 510,
+    "timestamp": "2025-08-01T03:47:34.895Z"
+  },
+  {
+    "plantId": 1752569247020,
+    "quantity": 1,
+    "buyerAddress": "fake address",
+    "paymentMethod": "Cash on Delivery"
+  },
+  {
+    "plantId": 1753072827954,
+    "quantity": 1,
+    "buyerAddress": "fake address",
+    "paymentMethod": "Cash on Delivery"
+  },
+  {
+    "id": 1754026742043,
+    "user": "Guest",
+    "address": "fake address",
+    "payment": "Cash on Delivery",
+    "items": [
+      {
+        "id": 1752569247020,
+        "name": "cactus",
+        "size": "Width: 15 inches, Height: 55 inches",
+        "care": "Needs sunlight weekly at least one, and water it well",
+        "price": 500,
+        "imagePath": "/uploads/1752569247008-plant4.jfif",
+        "sellerName": "raosudarshan@gmail.com",
+        "sold": 2,
+        "stock": 0,
+        "quantity": 1,
+        "subtotal": 500
+      },
+      {
+        "id": 1753072827954,
+        "name": "OAS penny worth Dollar plant",
+        "size": "Width: 5 cm, Height: 10 cm",
+        "care": "It is a plastic cup grown plant. It won't survive for a long time, maximum life expectancy is 1 month, so it is more like a decoration, but one still needs to water it if you want it to look good and fresh (at least 2 times a day) as long as possible",
+        "price": 10,
+        "imagePath": "/uploads/1753072827949-81tJ40sAUEL._UF1000,1000_QL80_.jpg",
+        "sellerName": "raosudarshan@gmail.com",
+        "sold": 4,
+        "stock": 4,
+        "quantity": 1,
+        "subtotal": 10
+      }
+    ],
+    "total": 510,
+    "timestamp": "2025-08-01T05:39:02.043Z"
+  }
+]

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Seller Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    input.stock-input {
+      margin-top: 5px;
+      margin-bottom: 10px;
+      padding: 6px;
+      font-size: 0.9rem;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .plant-card button.cta-button {
+      margin-top: 6px;
+      width: 100%;
+      background-color: #1b4d3e;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Seller Dashboard</h1>
+    <nav>
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="seller.html" class="nav-link">Seller Portal</a>
+    </nav>
+  </header>
+
+  <section class="dashboard">
+    <h2 style="text-align:center;">Your Plant Listings</h2>
+    <div style="text-align:center; margin:20px;">
+      <a href="upload-plant.html" class="cta-button">Register New Plant</a>
+    </div>
+
+    <div id="dashboardContainer" class="plant-grid"></div>
+  </section>
+
+  <script src="js/seller-dashboard.js"></script>
+</body>
+</html>

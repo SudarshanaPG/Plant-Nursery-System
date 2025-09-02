@@ -1,0 +1,604 @@
+/* --------------------------
+   BASE STYLING
+-------------------------- */
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(180deg, #f5fbe9, #e8f2ec);
+  color: #2f3e46;
+}
+
+/* --------------------------
+   HEADER
+-------------------------- */
+
+header {
+  background: linear-gradient(90deg, #14532d, #064e3b);
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+header h1 {
+  margin: 0;
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5em;
+  letter-spacing: 1px;
+}
+
+nav {
+  margin-top: 10px;
+}
+
+.nav-link {
+  color: #fef9c3;
+  text-decoration: none;
+  margin: 0 15px;
+  font-weight: bold;
+  font-size: 1.05em;
+  position: relative;
+  padding: 5px 0;
+  transition: color 0.3s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #d4af37;
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #d4af37;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* --------------------------
+   INTRO SECTION
+-------------------------- */
+
+.intro {
+  padding: 30px;
+  text-align: center;
+}
+
+.article {
+  max-width: 700px;
+  margin: auto;
+  font-size: 1.1em;
+  line-height: 1.6;
+  color: #444;
+}
+
+/* --------------------------
+   CTA BUTTONS
+-------------------------- */
+
+.cta-button {
+  display: inline-block;
+  background-color: #1b4d3e;
+  color: #ffffff;
+  padding: 0.75em 1.5em;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s, transform 0.3s;
+}
+
+.cta-button:hover {
+  background-color: #d4af37;
+  color: #1b4d3e;
+  transform: translateY(-2px);
+}
+
+.cta-button.secondary {
+  background-color: #d4af37;
+  color: #1b4d3e;
+}
+
+.cta-button.secondary:hover {
+  background-color: #1b4d3e;
+  color: #ffffff;
+}
+
+/* --------------------------
+   INFINITE SCROLL GALLERY
+-------------------------- */
+
+.scroll-gallery {
+  overflow: hidden;
+  width: 100%;
+  padding: 30px 0;
+  background: #eaf9ec;
+}
+
+.scroll-track {
+  display: flex;
+  gap: 20px;
+  animation: scroll-left 30s linear infinite;
+}
+
+.scroll-track img {
+  height: 180px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.scroll-track img:hover {
+  transform: scale(1.05);
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* --------------------------
+   PLANT CARDS (GENERAL)
+-------------------------- */
+
+.plant-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #d4af37;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  width: 250px;
+  text-align: center;
+  padding: 15px;
+  margin: 20px;
+  display: inline-block;
+  vertical-align: top;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.plant-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+}
+
+.plant-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.plant-card h3 {
+  font-family: 'Playfair Display', serif;
+  color: #1b4d3e;
+  font-size: 1.3em;
+  margin: 10px 0;
+}
+
+.plant-card p {
+  color: #333;
+  font-size: 0.95em;
+  margin: 5px 0;
+}
+
+.plant-card button {
+  background-color: #1b4d3e;
+  color: #fff;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.plant-card button:hover {
+  background-color: #d4af37;
+  color: #1b4d3e;
+}
+
+/* --------------------------
+   FORMS (SELLER & ADMIN)
+-------------------------- */
+
+.seller-form form,
+.admin-login form {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  border: 2px solid #d4af37;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  max-width: 500px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.seller-form h2,
+.admin-login h2 {
+  font-family: 'Playfair Display', serif;
+  text-align: center;
+  color: #1b4d3e;
+}
+
+.seller-form input,
+.seller-form textarea,
+.admin-login input {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1em;
+  background: #f8fff9;
+  transition: border-color 0.3s;
+}
+
+.seller-form input:focus,
+.seller-form textarea:focus,
+.admin-login input:focus {
+  border-color: #d4af37;
+  outline: none;
+}
+
+.seller-form button,
+.admin-login button {
+  background-color: #1b4d3e;
+  color: #ffffff;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.seller-form button:hover,
+.admin-login button:hover {
+  background-color: #d4af37;
+  color: #1b4d3e;
+}
+
+/* --------------------------
+   DASHBOARD PLANT CARDS
+-------------------------- */
+
+.dashboard .plant-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px;
+}
+
+.dashboard .plant-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #d4af37;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  width: 220px;
+  padding: 15px;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.dashboard .plant-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.dashboard .plant-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.dashboard .plant-card h3 {
+  font-family: 'Playfair Display', serif;
+  margin: 10px 0 5px;
+  font-size: 1.2em;
+  color: #1b4d3e;
+}
+
+.dashboard .plant-card p {
+  margin: 4px 0;
+  font-size: 0.95em;
+  color: #333;
+}
+
+/* --------------------------
+   PLANT DETAIL PAGE
+-------------------------- */
+
+.plant-detail {
+  max-width: 700px;
+  margin: 40px auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  border: 2px solid #d4af37;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.plant-detail img {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.plant-detail label {
+  font-weight: bold;
+  margin-top: 10px;
+  display: block;
+  color: #1b4d3e;
+}
+
+.plant-detail textarea,
+.plant-detail input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1em;
+  margin-top: 5px;
+}
+
+/* --------------------------
+   INVOICE PAGE
+-------------------------- */
+
+.invoice {
+  max-width: 700px;
+  margin: 40px auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  border: 2px solid #d4af37;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.invoice h2 {
+  font-family: 'Playfair Display', serif;
+  text-align: center;
+  color: #1b4d3e;
+  margin-bottom: 20px;
+}
+
+.invoice p {
+  font-size: 1em;
+  color: #333;
+  margin: 10px 0;
+}
+
+.invoice hr {
+  margin: 20px 0;
+  border: none;
+  border-top: 1px solid #d4af37;
+}
+
+.seller-form textarea {
+  min-height: 80px;
+  font-size: 1em;
+}
+.cta-button.secondary {
+  background-color: #d4af37;
+  color: #1b4d3e;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: bold;
+  text-decoration: none;
+  margin-left: 10px;
+}
+
+.top-right-button {
+  position: absolute;
+  top: 20px;
+  right: 40px;
+}
+
+.top-right-button .cta-button.secondary {
+  background-color: #d4af37;
+  color: #1b4d3e;
+  font-weight: bold;
+  padding: 8px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+/* Royal Invoice Styling */
+.invoice-box {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 30px;
+  border: 2px solid #d4af37;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Playfair Display', serif;
+  background: #fffef6;
+  color: #1b4d3e;
+  border-radius: 12px;
+}
+
+.invoice-box h2 {
+  border-bottom: 2px solid #d4af37;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: #1b4d3e;
+  text-align: center;
+}
+
+.invoice-box p {
+  font-size: 1rem;
+  margin: 5px 0;
+}
+
+.invoice-box .plant-card {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 8px;
+  background: #fdfdf8;
+  page-break-inside: avoid;
+}
+
+.invoice-box .plant-card h3 {
+  margin-top: 0.5em;
+  font-size: 1.2rem;
+  color: #1b4d3e;
+}
+
+/* Download button (hide on print) */
+@media print {
+  header, nav, .cta-button {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    font-family: 'Playfair Display', serif;
+    color: black;
+  }
+
+  .invoice-box {
+    border: 2px solid black;
+    box-shadow: none;
+    color: black;
+    page-break-inside: avoid;
+  }
+
+  .invoice-box .plant-card {
+    border: 1px solid black;
+    background: white;
+  }
+}
+
+@media print {
+  body {
+    background: white;
+    color: #000;
+    font-family: 'Playfair Display', serif;
+  }
+
+  .plant-card {
+    page-break-inside: avoid;
+    border: 1px solid #d4af37;
+    box-shadow: none;
+  }
+
+  header, nav {
+    display: none;
+  }
+
+  .cta-button {
+    display: none;
+  }
+}
+.dashboard-container {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.section-title {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  color: #0d3b2e;
+  font-weight: bold;
+  padding-left: 5px;
+  border-left: 4px solid #1b4d3e;
+}
+
+.card-section {
+  flex: 1 1 48%;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+.card strong {
+  display: inline-block;
+  width: 130px;
+  color: #1b4d3e;
+}
+
+.dashboard-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 2rem;
+  justify-content: space-between;
+}
+
+.card-section {
+  flex: 1 1 48%;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1b4d3e;
+  margin-bottom: 15px;
+  border-left: 4px solid #0d3b2e;
+  padding-left: 10px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.card img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card strong {
+  display: inline-block;
+  width: 140px;
+  color: #1b4d3e;
+}

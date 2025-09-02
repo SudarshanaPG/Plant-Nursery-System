@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload Plant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Upload New Plant</h1>
+    <nav>
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="seller-dashboard.html" class="nav-link">Dashboard</a>
+      <a href="plants.html" class="nav-link">Browse Plants</a>
+    </nav>
+  </header>
+
+  <section class="seller-form">
+    <form id="plantForm" enctype="multipart/form-data">
+      <h2 style="text-align:center; margin-bottom: 20px;">Register Your Plant</h2>
+
+      <div class="form-group">
+        <label for="plantName">Plant Name:</label>
+        <input type="text" name="name" id="plantName" placeholder="e.g. Peace Lily" required>
+      </div>
+
+      <div class="form-group">
+        <label for="plantImage">Upload Image:</label>
+        <input type="file" name="image" id="plantImage" accept="image/*" required title="Upload a clear photo of your plant (JPEG, PNG)">
+      </div>
+
+      <div class="form-group">
+        <label for="widthValue">Width:</label>
+        <div style="display: flex; gap: 10px;">
+          <input type="number" name="widthValue" id="widthValue" placeholder="e.g. 25" required style="flex: 1;">
+          <select name="widthUnit" id="widthUnit" required style="flex: 1;">
+            <option value="">Select Unit</option>
+            <option value="cm">cm</option>
+            <option value="inches">inches</option>
+            <option value="feet">feet</option>
+            <option value="meters">meters</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="heightValue">Height:</label>
+        <div style="display: flex; gap: 10px;">
+          <input type="number" name="heightValue" id="heightValue" placeholder="e.g. 2" required style="flex: 1;">
+          <select name="heightUnit" id="heightUnit" required style="flex: 1;">
+            <option value="">Select Unit</option>
+            <option value="cm">cm</option>
+            <option value="inches">inches</option>
+            <option value="feet">feet</option>
+            <option value="meters">meters</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="quantity">Quantity:</label>
+        <input type="number" name="quantity" id="quantity" placeholder="e.g. 10" required min="1">
+      </div>
+
+
+      <div class="form-group">
+        <label for="care">Care Instructions:</label>
+        <textarea name="care" id="care" rows="4" style="width: 100%;" placeholder="e.g. Needs sunlight, water twice weekly..." required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="price">Price (₹):</label>
+        <input type="number" name="price" id="price" placeholder="e.g. 500" required>
+      </div>
+
+      <div style="text-align:center;">
+        <button type="submit" class="cta-button">Register Plant</button>
+      </div>
+
+      <p id="plantStatus" style="text-align:center; color: green;"></p>
+    </form>
+  </section>
+
+  <script src="js/upload-plant.js"></script>
+</body>
+</html>

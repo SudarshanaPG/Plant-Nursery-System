@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm Order</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header>
+    <h1>Confirm Your Order</h1>
+    <nav>
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="cart.html" class="nav-link">My Cart</a>
+    </nav>
+  </header>
+
+  <section class="plant-section">
+    <!-- Cart Items Display -->
+    <div id="items" class="plant-list"></div>
+
+    <!-- ✅ Add total display -->
+    <div id="total" style="text-align:center; font-weight:bold; margin-top: 10px;"></div>
+
+    <!-- Order Form -->
+    <div class="order-form">
+      <h3 style="text-align:center;">Shipping & Payment</h3>
+
+      <label for="address">Shipping Address:</label>
+      <textarea id="address" rows="3" required placeholder="Enter full delivery address"></textarea>
+
+      <div style="margin-top: 1em;">
+        <strong>Payment Method:</strong><br>
+        <label><input type="radio" name="payment" value="cod" checked> Cash on Delivery</label><br>
+        <label><input type="radio" name="payment" value="online"> Online (QR Code)</label>
+      </div>
+
+      <div style="text-align:center; margin-top: 20px;">
+        <button id="place-order" class="cta-button">Place Order</button>
+      </div>
+
+      <p id="orderStatus" style="text-align:center; color: green; margin-top: 15px;"></p>
+    </div>
+  </section>
+
+  <script src="js/order.js"></script>
+</body>
+</html>
