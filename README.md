@@ -64,9 +64,11 @@ Copy `.env.example` -> `.env`.
 3. Add a persistent disk (optional but recommended):
    - Mount path: `/var/data`
 4. Set Build Command:
-   - `npm ci && npm run prisma:generate && npm run prisma:deploy`
+   - `npm ci && npm run prisma:generate`
 5. Set Start Command:
-   - `npm start`
+   - `npm run prisma:deploy && npm start`
+
+Note: if you use a Render Disk mounted at `/var/data`, it is only available at runtime (not during build). That’s why `prisma migrate deploy` must run in the Start Command, not the Build Command.
 6. Set environment variables (Render -> Environment):
    - `NODE_ENV=production`
    - `DATABASE_URL=file:/var/data/prod.db` (or another path if you didn't mount a disk)

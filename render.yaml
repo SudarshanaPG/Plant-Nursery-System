@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: plant-nursery-system
+    env: node
+    plan: free
+    buildCommand: npm ci && npm run prisma:generate
+    startCommand: npm run prisma:deploy && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PAYMENT_PROVIDER
+        value: fake
+      - key: DATABASE_URL
+        value: file:/var/data/prod.db
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_CALLBACK_URL
+        sync: false
+      - key: ADMIN_EMAILS
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      - key: RAZORPAY_CALLBACK_URL
+        sync: false
+    disks:
+      - name: data
+        mountPath: /var/data
+        sizeGB: 1
