@@ -56,3 +56,38 @@ Copy `.env.example` -> `.env`.
 
 - Dev: set `PAYMENT_PROVIDER=fake` to use `fake-pay.html` (no ngrok/webhook required)
 - Prod: set `PAYMENT_PROVIDER=razorpay` and configure Razorpay keys + webhook to `/payment-webhook`
+
+## Deploy (Render)
+
+1. Push this repo to GitHub.
+2. On Render: New -> Web Service -> connect the repo.
+3. Add a persistent disk (optional but recommended):
+   - Mount path: `/var/data`
+4. Set Build Command:
+   - `npm ci && npm run prisma:generate && npm run prisma:deploy`
+5. Set Start Command:
+   - `npm start`
+6. Set environment variables (Render -> Environment):
+   - `NODE_ENV=production`
+   - `DATABASE_URL=file:/var/data/prod.db` (or another path if you didn't mount a disk)
+   - `UPLOAD_DIR=/var/data/uploads` (optional; matches the disk mount above)
+   - `SESSION_SECRET=...`
+   - `GOOGLE_CLIENT_ID=...`
+   - `GOOGLE_CLIENT_SECRET=...`
+   - `GOOGLE_CALLBACK_URL=https://YOUR_RENDER_DOMAIN/auth/google/callback`
+   - `ADMIN_EMAILS=your-admin@gmail.com`
+   - Optional payments:
+     - `PAYMENT_PROVIDER=fake` (demo) or `PAYMENT_PROVIDER=razorpay`
+     - `RAZORPAY_KEY_ID=...`
+     - `RAZORPAY_KEY_SECRET=...`
+     - `RAZORPAY_WEBHOOK_SECRET=...`
+     - `RAZORPAY_CALLBACK_URL=https://YOUR_RENDER_DOMAIN/invoice.html`
+
+Google OAuth config you must update for the hosted domain:
+
+- Authorized JavaScript origins: `https://YOUR_RENDER_DOMAIN`
+- Authorized redirect URIs: `https://YOUR_RENDER_DOMAIN/auth/google/callback`
+
+Razorpay webhook URL (hosted only):
+
+- `https://YOUR_RENDER_DOMAIN/payment-webhook`

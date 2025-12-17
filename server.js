@@ -29,7 +29,9 @@ if (!process.env.DATABASE_URL) {
 
 const prisma = new PrismaClient();
 
-const uploadDir = path.join(__dirname, 'uploads');
+const uploadDir = process.env.UPLOAD_DIR
+  ? path.resolve(String(process.env.UPLOAD_DIR))
+  : path.join(__dirname, 'uploads');
 fs.mkdirSync(uploadDir, { recursive: true });
 
 const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-insecure-secret';
