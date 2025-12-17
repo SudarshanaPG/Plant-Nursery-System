@@ -11,9 +11,9 @@ services:
       - key: PAYMENT_PROVIDER
         value: fake
       - key: DATABASE_URL
-        value: file:/var/data/prod.db
+        sync: false
       - key: UPLOAD_DIR
-        value: /var/data/uploads
+        value: /tmp/uploads
       - key: SESSION_SECRET
         generateValue: true
       - key: GOOGLE_CLIENT_ID
@@ -32,7 +32,3 @@ services:
         sync: false
       - key: RAZORPAY_CALLBACK_URL
         sync: false
-    disks:
-      - name: data
-        mountPath: /var/data
-        sizeGB: 1

@@ -2,9 +2,10 @@
 
 Small e-commerce style demo with:
 - Node.js + Express
-- Prisma + SQLite (dev) with migrations
+- Prisma + Postgres (Neon/Supabase recommended)
 - Cookie-based sessions stored in DB (no JWT)
-- Static `public/` HTML/CSS/JS frontend
+- Google OAuth-only login for customer/seller/admin
+- Static `public/` HTML/CSS/JS frontend + admin/seller dashboards
 
 ## Quickstart (Windows / PowerShell)
 
@@ -12,6 +13,7 @@ Small e-commerce style demo with:
 cd "D:\My project"
 npm install
 Copy-Item .env.example .env
+# Edit .env and set DATABASE_URL to your Postgres connection string
 npm run prisma:deploy
 npm run prisma:generate
 npm run dev
@@ -23,7 +25,7 @@ Open `http://localhost:3000`.
 
 Copy `.env.example` -> `.env`.
 
-- `DATABASE_URL` (required): SQLite by default (`file:./dev.db`) relative to `prisma/schema.prisma`
+- `DATABASE_URL` (required): Postgres connection string (Neon/Supabase)
 - `SESSION_SECRET` (recommended): random long string
 - `PAYMENT_PROVIDER`: `fake` (dev demo) or `razorpay` (real)
 - Google OAuth (required for login):
@@ -48,31 +50,27 @@ Copy `.env.example` -> `.env`.
 
 ## App flow
 
-- Customers: click "Continue with Google" -> browse plants -> add to cart -> checkout (required)
-- Sellers: click "Continue with Google" -> (admin promotes to SELLER) -> upload plants -> manage stock in dashboard
-- Admin: set `ADMIN_EMAILS`, then click "Continue with Google" on `http://localhost:3000/admin-login.html`
+- Customers: Continue with Google -> browse -> cart -> checkout (login required)
+- Sellers: Continue with Google -> (admin promotes to SELLER) -> upload plants -> manage stock
+- Admin: set `ADMIN_EMAILS`, then Continue with Google on `http://localhost:3000/admin-login.html`
 
 ## Payments (dev vs prod)
 
-- Dev: set `PAYMENT_PROVIDER=fake` to use `fake-pay.html` (no ngrok/webhook required)
+- Dev: set `PAYMENT_PROVIDER=fake` (no webhook/ngrok needed)
 - Prod: set `PAYMENT_PROVIDER=razorpay` and configure Razorpay keys + webhook to `/payment-webhook`
 
 ## Deploy (Render)
 
-1. Push this repo to GitHub.
-2. On Render: New -> Web Service -> connect the repo.
-3. Add a persistent disk (optional but recommended):
-   - Mount path: `/var/data`
-4. Set Build Command:
-   - `npm ci && npm run prisma:generate`
-5. Set Start Command:
-   - `npm run prisma:deploy && npm start`
+Free tier note: Render free plan does not provide persistent disks, so use a hosted Postgres DB (Neon/Supabase).
 
-Note: if you use a Render Disk mounted at `/var/data`, it is only available at runtime (not during build). That’s why `prisma migrate deploy` must run in the Start Command, not the Build Command.
-6. Set environment variables (Render -> Environment):
+1. Create a Postgres database (Neon/Supabase) and copy the connection string.
+2. On Render: New -> Web Service -> connect the repo.
+3. Build Command: `npm ci && npm run prisma:generate`
+4. Start Command: `npm run prisma:deploy && npm start`
+5. Environment variables:
    - `NODE_ENV=production`
-   - `DATABASE_URL=file:/var/data/prod.db` (or another path if you didn't mount a disk)
-   - `UPLOAD_DIR=/var/data/uploads` (optional; matches the disk mount above)
+   - `DATABASE_URL=postgresql://...` (Neon/Supabase connection string)
+   - `UPLOAD_DIR=/tmp/uploads` (uploads are ephemeral on free tier)
    - `SESSION_SECRET=...`
    - `GOOGLE_CLIENT_ID=...`
    - `GOOGLE_CLIENT_SECRET=...`

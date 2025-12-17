@@ -7,6 +7,7 @@ const fs = require('fs');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const multer = require('multer');
+const os = require('os');
 const path = require('path');
 const Razorpay = require('razorpay');
 const { z } = require('zod');
@@ -31,7 +32,9 @@ const prisma = new PrismaClient();
 
 const uploadDir = process.env.UPLOAD_DIR
   ? path.resolve(String(process.env.UPLOAD_DIR))
-  : path.join(__dirname, 'uploads');
+  : process.env.NODE_ENV === 'production'
+    ? path.join(os.tmpdir(), 'uploads')
+    : path.join(__dirname, 'uploads');
 fs.mkdirSync(uploadDir, { recursive: true });
 
 const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-insecure-secret';
