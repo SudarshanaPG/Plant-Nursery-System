@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CUSTOMER
+  SELLER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+  FULFILLED
+}
+
+enum PaymentMethod {
+  COD
+  RAZORPAY
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  name         String
+  passwordHash String?
+  googleId     String?  @unique
+  phone        String?
+  photoPath    String?
+  role         Role     @default(CUSTOMER)
+  disabledAt   DateTime?
+  disabledReason String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  plants Plant[]
+  orders Order[]
+
+  @@index([role])
+  @@index([disabledAt])
+}
+
+model Plant {
+  id        Int      @id @default(autoincrement())
+  name      String
+  size      String
+  care      String
+  price     Int
+  imagePath String?
+  stock     Int
+  sold      Int      @default(0)
+  deletedAt DateTime?
+  deletedReason String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sellerId Int
+  seller   User     @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+
+  orderItems OrderItem[]
+
+  @@index([sellerId])
+  @@index([deletedAt])
+}
+
+model Order {
+  id                  Int           @id @default(autoincrement())
+  email               String?
+  address             String
+  paymentMethod       PaymentMethod
+  status              OrderStatus   @default(PENDING)
+  total               Int
+  razorpayPaymentLinkId String?     @unique
+  inventoryAppliedAt  DateTime?
+  inventoryRevertedAt DateTime?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  userId Int?
+  user   User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  items OrderItem[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([inventoryAppliedAt])
+  @@index([inventoryRevertedAt])
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  quantity  Int
+  unitPrice Int
+  subtotal  Int
+  plantName String
+  imagePath String?
+
+  createdAt DateTime @default(now())
+
+  orderId Int
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  plantId Int
+  plant   Plant @relation(fields: [plantId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+  @@index([plantId])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+}

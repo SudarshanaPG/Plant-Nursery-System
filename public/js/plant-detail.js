@@ -1,24 +1,34 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  let id = params.get('id');
-
-  // 🔁 Fallback if id not in URL
-  if (!id) {
-    id = localStorage.getItem("book-now-id");
-    console.warn("No ID found in URL — using localStorage fallback:", id);
+document.addEventListener('DOMContentLoaded', async () => {
+  let me = null;
+  try {
+    const res = await fetch('/api/me', { cache: 'no-store' });
+    const data = await res.json();
+    me = data.user || null;
+    if (me?.email) localStorage.setItem('loggedInUser', me.email);
+  } catch {
+    me = null;
   }
 
-  fetch(`/data/plants.json?ts=${Date.now()}`)  // ✅ Correct path
-    .then(res => res.json())
-    .then(plants => {
-      console.log("Looking for ID:", id);
-      console.log("Available IDs:", plants.map(p => p.id));
+  if (!me) {
+    window.location.href = `/auth/google?next=${encodeURIComponent(location.pathname + location.search)}`;
+    return;
+  }
 
-      const plant = plants.find(p => p.id == id);
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  if (!id) {
+    document.getElementById('plantDetail').innerHTML = '<p>Plant not found.</p>';
+    return;
+  }
+
+  fetch(`/data/plants.json?ts=${Date.now()}`)
+    .then((res) => res.json())
+    .then((plants) => {
+      const plant = plants.find((p) => p.id == id);
       const container = document.getElementById('plantDetail');
 
       if (!plant) {
-        container.innerHTML = "<p>❌ Plant not found.</p>";
+        container.innerHTML = '<p>Plant not found.</p>';
         return;
       }
 
@@ -41,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <label>Quantity:</label>
         <div style="margin-bottom: 1em;">
-          <button onclick="changeQty(-1)">−</button>
+          <button onclick="changeQty(-1)">-</button>
           <span id="qtyDisplay" style="margin: 0 10px;">1</span>
           <button onclick="changeQty(1)">+</button>
         </div>
@@ -61,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         quantity += delta;
         if (quantity < 1) quantity = 1;
         if (quantity > plant.stock) {
-          alert(`❌ Only ${plant.stock} in stock.`);
+          alert(`Only ${plant.stock} in stock.`);
           quantity = plant.stock;
         }
         updateQuantityDisplay();
@@ -74,56 +84,62 @@ document.addEventListener('DOMContentLoaded', () => {
         const payment = document.querySelector("input[name='payment']:checked").value;
 
         if (!address) {
-          alert("Please enter your shipping address.");
+          alert('Please enter your shipping address.');
           return;
         }
 
         const orderData = {
-          items: [{
-            name: plant.name,
-            price: plant.price,
-            quantity
-          }],
+          items: [
+            {
+              name: plant.name,
+              price: plant.price,
+              quantity
+            }
+          ],
           total: plant.price * quantity,
-          paymentMethod: payment === "online" ? "Online (QR Code)" : "Cash on Delivery",
+          paymentMethod: payment === 'online' ? 'Online (QR Code)' : 'Cash on Delivery',
           address
         };
 
-        if (payment === "cod") {
+        if (payment === 'cod') {
           fetch(`/buy/${plant.id}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ quantity, address, paymentMethod: orderData.paymentMethod })
+            body: JSON.stringify({
+              quantity,
+              address,
+              email: me.email
+            })
           })
-            .then(res => res.json())
-            .then(data => {
+            .then((res) => res.json())
+            .then((data) => {
               if (data.success) {
                 localStorage.setItem('latestOrder', JSON.stringify(orderData));
-                alert("✅ Order placed successfully!");
-                window.location.href = "invoice.html";
+                alert('Order placed successfully.');
+                window.location.href = 'invoice.html';
               } else {
-                alert("❌ " + data.message);
+                alert(data.message || 'Failed to place order.');
               }
             });
         } else {
           fetch('/create-payment', {
             method: 'POST',
-            headers: { "Content-Type": "application/json" },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               amount: orderData.total,
-              name: "Customer",
-              email: "testuser@example.com",
+              name: me.email,
+              email: me.email,
               cart: { [plant.id]: quantity },
               address
             })
           })
-            .then(res => res.json())
-            .then(data => {
+            .then((res) => res.json())
+            .then((data) => {
               if (data.success) {
                 localStorage.setItem('latestOrder', JSON.stringify(orderData));
                 window.location.href = data.short_url;
               } else {
-                alert("❌ Could not generate payment link");
+                alert(data.message || 'Could not generate payment link');
               }
             });
         }

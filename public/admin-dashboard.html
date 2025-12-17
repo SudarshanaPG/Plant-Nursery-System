@@ -3,26 +3,49 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Dashboard</title>
+  <title>Plant Nursery System (DEMO) - Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/admin-dashboard.css" />
 </head>
 <body>
   <header>
     <h1>Admin Dashboard</h1>
     <nav>
-      <a href="index.html" class="nav-link">Home</a>
+      <a href="admin-dashboard.html" class="nav-link">Dashboard</a>
+      <a href="#" id="adminLogout" class="nav-link">Logout</a>
     </nav>
+    <div class="demo-banner">Plant Nursery System (DEMO)</div>
   </header>
 
-  <div class="dashboard-container">
-    <div class="card-section" id="sellersSection">
-      <div class="section-title">🧑‍🌾 Sellers & Earnings</div>
+  <div class="admin-section">
+    <div class="admin-tabs">
+      <button class="cta-button secondary" data-tab="summary">Summary</button>
+      <button class="cta-button secondary" data-tab="users">Users</button>
+      <button class="cta-button secondary" data-tab="plants">Plants</button>
+      <button class="cta-button secondary" data-tab="orders">Orders</button>
     </div>
 
-    <div class="card-section" id="customersSection">
-      <div class="section-title">👤 Registered Customers</div>
-    </div>
+    <p id="adminError" style="color:red;"></p>
+
+    <section id="tab-summary" class="admin-tab">
+      <h2 class="section-title">Overview</h2>
+      <div id="summaryCards" class="dashboard-container"></div>
+    </section>
+
+    <section id="tab-users" class="admin-tab" style="display:none;">
+      <h2 class="section-title">Users</h2>
+      <div id="usersTable"></div>
+    </section>
+
+    <section id="tab-plants" class="admin-tab" style="display:none;">
+      <h2 class="section-title">Plants</h2>
+      <div id="plantsTable"></div>
+    </section>
+
+    <section id="tab-orders" class="admin-tab" style="display:none;">
+      <h2 class="section-title">Orders</h2>
+      <div id="ordersTable"></div>
+    </section>
   </div>
 
   <script src="js/admin-dashboard.js"></script>

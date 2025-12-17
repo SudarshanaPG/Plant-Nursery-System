@@ -1,32 +1,39 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const user = localStorage.getItem('loggedInUser');
-  if (!user) {
-    alert("❗ Please login to view your cart.");
-    window.location.href = "user-login.html";
+document.addEventListener('DOMContentLoaded', async () => {
+  let me = null;
+  try {
+    const res = await fetch('/api/me', { cache: 'no-store' });
+    const data = await res.json();
+    me = data.user || null;
+    if (me?.email) localStorage.setItem('loggedInUser', me.email);
+  } catch {
+    me = null;
+  }
+
+  if (!me) {
+    window.location.href = `/auth/google?next=${encodeURIComponent('/cart.html')}`;
     return;
   }
 
-  const cartKey = `cart_${user}`;
+  const cartKey = `cart_${me.email}`;
   let cart = JSON.parse(localStorage.getItem(cartKey)) || {};
-  const container = document.getElementById("cart-items");
-  const totalDisplay = document.getElementById("cart-total");
-  const checkoutBtn = document.getElementById("checkoutBtn");
+  const container = document.getElementById('cart-items');
+  const totalDisplay = document.getElementById('cart-total');
+  const checkoutBtn = document.getElementById('checkoutBtn');
 
   fetch('/data/plants.json')
-    .then(res => {
-      if (!res.ok) throw new Error("Network response was not ok");
+    .then((res) => {
+      if (!res.ok) throw new Error('Network response was not ok');
       return res.json();
     })
-    .then(plants => {
-      // ✅ Save to localStorage so order.js can access it
-      localStorage.setItem("plants", JSON.stringify(plants));
+    .then((plants) => {
+      localStorage.setItem('plants', JSON.stringify(plants));
 
-      container.innerHTML = "";
+      container.innerHTML = '';
       let total = 0;
       const validCart = {};
 
-      Object.keys(cart).forEach(id => {
-        const plant = plants.find(p => p.id == id);
+      Object.keys(cart).forEach((id) => {
+        const plant = plants.find((p) => p.id == id);
         if (!plant) return;
 
         const qty = cart[id];
@@ -35,12 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
         total += subtotal;
         validCart[id] = qty;
 
-        const div = document.createElement("div");
-        div.className = "plant-card";
+        const div = document.createElement('div');
+        div.className = 'plant-card';
         div.innerHTML = `
           <img src="${plant.imagePath}" alt="${plant.name}">
-          <div class="plant-info">
-            <h3>${plant.name}</h3>
+            <div class="plant-info">
+              <h3>${plant.name}</h3>
             <p>Price: ₹${plant.price}</p>
             <p><strong>Stock:</strong> ${availableStock > 0 ? availableStock : 'Out of stock'}</p>
             <p>Care: ${plant.care}</p>
@@ -54,9 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         container.appendChild(div);
 
-        div.querySelector(".inc").onclick = () => {
+        div.querySelector('.inc').onclick = () => {
           if (qty + 1 > availableStock) {
-            alert(`❌ We do not have more than ${availableStock} in stock.`);
+            alert(`Only ${availableStock} available in stock.`);
             return;
           }
           cart[id]++;
@@ -64,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
           location.reload();
         };
 
-        div.querySelector(".dec").onclick = () => {
+        div.querySelector('.dec').onclick = () => {
           if (qty <= 1) {
             delete cart[id];
           } else {
@@ -80,15 +87,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       checkoutBtn.onclick = () => {
         if (Object.keys(validCart).length === 0) {
-          alert("❌ Your cart is empty.");
+          alert('Your cart is empty.');
           return;
         }
-        sessionStorage.setItem("cart", JSON.stringify(validCart));
-        window.location.href = "order.html";
+        sessionStorage.setItem('cart', JSON.stringify(validCart));
+        window.location.href = 'order.html';
       };
     })
-    .catch(err => {
-      console.error("❌ Error loading plants:", err);
-      container.innerHTML = "<p>Error loading cart items.</p>";
+    .catch((err) => {
+      console.error('Error loading cart items:', err);
+      container.innerHTML = '<p>Error loading cart items.</p>';
     });
 });

@@ -10,6 +10,12 @@ body {
   color: #2f3e46;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 /* --------------------------
    HEADER
 -------------------------- */
@@ -20,6 +26,7 @@ header {
   padding: 20px;
   text-align: center;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  position: relative;
 }
 
 header h1 {
@@ -31,6 +38,19 @@ header h1 {
 
 nav {
   margin-top: 10px;
+}
+
+.demo-banner {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fef9c3;
+  font-size: 0.9em;
+  font-weight: 700;
+  letter-spacing: 0.4px;
 }
 
 .nav-link {
@@ -209,6 +229,22 @@ nav {
 .plant-card button:hover {
   background-color: #d4af37;
   color: #1b4d3e;
+}
+
+/* --------------------------
+   PLANT GRID (GENERAL)
+-------------------------- */
+
+.plant-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px;
+}
+
+.plant-grid .plant-card {
+  margin: 0;
 }
 
 /* --------------------------
@@ -510,6 +546,73 @@ nav {
     display: none;
   }
 }
+
+/* --------------------------
+   ADMIN DASHBOARD
+-------------------------- */
+
+.admin-section {
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 20px 0 10px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border: 2px solid #d4af37;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.admin-table th {
+  background: linear-gradient(90deg, #14532d, #064e3b);
+  color: #fff;
+  font-weight: bold;
+}
+
+.admin-table tr:nth-child(even) td {
+  background: #f8fff9;
+}
+
+.admin-table select {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #f8fff9;
+}
+
+.admin-actions .cta-button {
+  margin-right: 8px;
+  margin-bottom: 6px;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll .admin-table {
+  min-width: 720px;
+}
 .dashboard-container {
   display: flex;
   gap: 2rem;
@@ -601,4 +704,85 @@ nav {
   display: inline-block;
   width: 140px;
   color: #1b4d3e;
+}
+
+/* --------------------------
+   MOBILE RESPONSIVE
+-------------------------- */
+
+@media (max-width: 768px) {
+  header {
+    padding: 16px 12px;
+  }
+
+  header h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 12px;
+  }
+
+  .nav-link {
+    margin: 0;
+  }
+
+  .top-right-button {
+    position: static;
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .intro {
+    padding: 20px 12px;
+  }
+
+  .scroll-track img {
+    height: 140px;
+  }
+
+  .plant-grid {
+    padding: 20px 12px;
+    gap: 12px;
+  }
+
+  .dashboard .plant-grid {
+    padding: 20px 12px;
+    gap: 12px;
+  }
+
+  .plant-card,
+  .dashboard .plant-card {
+    width: min(100%, 340px);
+    margin: 12px auto;
+  }
+
+  .admin-section {
+    padding: 0 12px;
+  }
+
+  .dashboard-container {
+    padding: 1rem 0.5rem;
+    gap: 1rem;
+  }
+
+  .card-section {
+    flex: 1 1 100%;
+  }
+
+  .invoice-box {
+    margin: 16px 12px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  header h1 {
+    font-size: 1.7rem;
+  }
 }

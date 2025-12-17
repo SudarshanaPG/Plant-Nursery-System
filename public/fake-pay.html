@@ -3,16 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Plant Nursery System (DEMO) - Seller Portal</title>
+  <title>Plant Nursery System (DEMO) - Demo Payment</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-
   <header>
-    <h1>Seller Portal</h1>
+    <h1>Demo Payment</h1>
     <nav>
-      <a href="index.html" class="nav-link">Home</a>
       <a href="plants.html" class="nav-link">Browse Plants</a>
       <a href="cart.html" class="nav-link">My Cart</a>
     </nav>
@@ -21,17 +19,17 @@
 
   <section class="seller-form">
     <form>
-      <h2>Seller Access</h2>
+      <h2 style="text-align:center;">Fake Razorpay (Dev Only)</h2>
       <p style="text-align:center;">
-        This demo uses Google sign-in only. Seller access is granted by an admin (set your role to <strong>SELLER</strong>).
+        This page simulates an online payment so you can test without ngrok/webhooks.
       </p>
-      <a href="/auth/google?next=/seller-dashboard.html" class="cta-button" style="text-align:center;"
-        >Continue with Google</a
-      >
-      <p id="sellerStatus" style="color:#1b4d3e; text-align:center;"></p>
+      <p id="payRef" style="text-align:center; color:#1b4d3e; font-weight:bold;"></p>
+      <button id="payBtn" type="button" class="cta-button">Pay Now (Simulate)</button>
+      <button id="cancelBtn" type="button" class="cta-button secondary">Cancel</button>
+      <p id="payError" style="color:red; text-align:center;"></p>
     </form>
   </section>
 
-  <script src="js/seller-portal.js"></script>
+  <script src="js/fake-pay.js"></script>
 </body>
 </html>

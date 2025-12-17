@@ -1,18 +1,33 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  let me = null;
+  try {
+    const res = await fetch('/api/me', { cache: 'no-store' });
+    const data = await res.json();
+    me = data.user || null;
+    if (me?.email) localStorage.setItem('loggedInUser', me.email);
+  } catch {
+    me = null;
+  }
+
+  if (!me) {
+    window.location.href = `/auth/google?next=${encodeURIComponent('/plants.html')}`;
+    return;
+  }
+
   fetch('/data/plants.json?ts=' + Date.now())
-    .then(response => {
-      if (!response.ok) throw new Error("Network response was not ok");
+    .then((response) => {
+      if (!response.ok) throw new Error('Network response was not ok');
       return response.json();
     })
-    .then(plants => {
-      const container = document.getElementById("plants-container");
-      if (!container) return alert("❌ Missing container!");
+    .then((plants) => {
+      const container = document.getElementById('plants-container');
+      if (!container) return alert('Something went wrong loading the page. Please refresh.');
 
-      container.innerHTML = "";
+      container.innerHTML = '';
 
-      plants.forEach(plant => {
-        const card = document.createElement("div");
-        card.className = "plant-card";
+      plants.forEach((plant) => {
+        const card = document.createElement('div');
+        card.className = 'plant-card';
 
         card.innerHTML = `
           <img src="${plant.imagePath}" alt="${plant.name}" />
@@ -26,40 +41,37 @@ document.addEventListener("DOMContentLoaded", () => {
         container.appendChild(card);
       });
 
-      // ✅ FIXED: ID passed via URL query string
-      document.querySelectorAll(".book-now").forEach(btn => {
+      document.querySelectorAll('.book-now').forEach((btn) => {
         btn.onclick = () => {
-          const id = btn.getAttribute("data-id");
-          const user = localStorage.getItem("loggedInUser");
-          if (!user) {
-            alert("Please log in to book a plant.");
-            return window.location.href = "user-login.html";
+          const id = btn.getAttribute('data-id');
+          if (!me) {
+            window.location.href = `/auth/google?next=${encodeURIComponent(`/plant-detail.html?id=${id}`)}`;
+            return;
           }
           window.location.href = `plant-detail.html?id=${id}`;
         };
       });
 
-      document.querySelectorAll(".add-to-cart").forEach(btn => {
+      document.querySelectorAll('.add-to-cart').forEach((btn) => {
         btn.onclick = () => {
-          const id = btn.getAttribute("data-id");
-          const user = localStorage.getItem("loggedInUser");
-          if (!user) {
-            alert("Please log in to add to cart.");
-            return window.location.href = "user-login.html";
+          const id = btn.getAttribute('data-id');
+          if (!me) {
+            window.location.href = `/auth/google?next=${encodeURIComponent('/plants.html')}`;
+            return;
           }
 
-          const cartKey = `cart_${user}`;
-          const cart = JSON.parse(localStorage.getItem(cartKey) || "{}");
+          const cartKey = `cart_${me.email}`;
+          const cart = JSON.parse(localStorage.getItem(cartKey) || '{}');
           cart[id] = (cart[id] || 0) + 1;
           localStorage.setItem(cartKey, JSON.stringify(cart));
 
-          alert("✅ Added to cart!");
+          alert('Added to cart.');
         };
       });
     })
-    .catch(error => {
-      console.error("❌ Error loading plants:", error);
-      const container = document.getElementById("plants-container");
-      if (container) container.innerHTML = "<p>⚠️ Could not load plants.</p>";
+    .catch((error) => {
+      console.error('Error loading plants:', error);
+      const container = document.getElementById('plants-container');
+      if (container) container.innerHTML = '<p>Could not load plants.</p>';
     });
 });

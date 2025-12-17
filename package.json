@@ -3,18 +3,33 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "dev": "node --watch server.js",
+    "start": "node server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "cross-env RUST_LOG=info prisma migrate dev --name dev --skip-generate",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:studio": "prisma studio",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "body-parser": "^2.2.0",
-    "cors": "^2.8.5",
+    "@prisma/client": "^6.19.1",
+    "@quixo3/prisma-session-store": "^3.1.13",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
+    "express-session": "^1.18.2",
+    "google-auth-library": "^10.5.0",
+    "helmet": "^8.1.0",
     "multer": "^2.0.1",
-    "razorpay": "^2.9.6"
+    "razorpay": "^2.9.6",
+    "zod": "^4.2.1"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0",
+    "prisma": "^6.19.1"
   }
 }
