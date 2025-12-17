@@ -133,6 +133,16 @@ nav {
   color: #ffffff;
 }
 
+.cta-button.danger {
+  background-color: #b91c1c;
+  color: #ffffff;
+}
+
+.cta-button.danger:hover {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
 /* --------------------------
    INFINITE SCROLL GALLERY
 -------------------------- */

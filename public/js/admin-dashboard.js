@@ -1,5 +1,7 @@
 const $ = (id) => document.getElementById(id);
 
+let currentAdminUser = null;
+
 async function fetchJson(url, options) {
   const res = await fetch(url, options);
   const contentType = res.headers.get('content-type') || '';
@@ -90,6 +92,7 @@ async function loadUsers() {
   const rows = users
     .map((u) => {
       const disabled = Boolean(u.disabledAt);
+      const isSelf = Boolean(currentAdminUser && Number(currentAdminUser.id) === Number(u.id));
       return `
         <tr>
           <td>${u.id}</td>
@@ -107,10 +110,13 @@ async function loadUsers() {
             <button class="cta-button secondary" data-user-edit="${u.id}">Edit</button>
             <button class="cta-button secondary" data-user-save="${u.id}">Save</button>
             ${
-              disabled
-                ? `<button class="cta-button" data-user-enable="${u.id}">Enable</button>`
-                : `<button class="cta-button" data-user-disable="${u.id}">Disable</button>`
+              isSelf
+                ? ''
+                : disabled
+                  ? `<button class="cta-button" data-user-enable="${u.id}">Enable</button>`
+                  : `<button class="cta-button" data-user-disable="${u.id}">Disable</button>`
             }
+            ${isSelf ? '' : `<button class="cta-button danger" data-user-delete="${u.id}">Delete</button>`}
           </td>
         </tr>
       `;
@@ -147,6 +153,25 @@ async function loadUsers() {
           body: JSON.stringify({ role })
         });
         await loadUsers();
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+  });
+
+  document.querySelectorAll('[data-user-delete]').forEach((btn) => {
+    btn.onclick = async () => {
+      const id = btn.getAttribute('data-user-delete');
+      const user = users.find((u) => String(u.id) === String(id));
+      const label = user?.email ? `${user.email}` : `user #${id}`;
+
+      const confirmation = prompt(`Type DELETE to permanently delete ${label}:`, '');
+      if (confirmation !== 'DELETE') return;
+
+      try {
+        await fetchJson(`/api/admin/users/${id}`, { method: 'DELETE' });
+        await loadUsers();
+        await loadSummary().catch(() => {});
       } catch (err) {
         setError(err.message);
       }
@@ -392,7 +417,7 @@ async function loadOrders() {
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    await requireAdmin();
+    currentAdminUser = await requireAdmin();
   } catch (err) {
     window.location.href = 'admin-login.html';
     return;

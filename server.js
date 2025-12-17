@@ -703,6 +703,49 @@ app.put(
   })
 );
 
+app.delete(
+  '/api/admin/users/:id',
+  requireRole('ADMIN'),
+  asyncHandler(async (req, res) => {
+    const id = Number.parseInt(req.params.id, 10);
+    if (!Number.isFinite(id)) return res.status(400).json({ success: false, message: 'Invalid id' });
+
+    if (id === req.session.user.id) {
+      return res.status(400).json({ success: false, message: 'Cannot delete your own account' });
+    }
+
+    const target = await prisma.user.findUnique({
+      where: { id },
+      select: { id: true, role: true }
+    });
+    if (!target) return res.status(404).json({ success: false, message: 'User not found' });
+
+    if (target.role === 'ADMIN') {
+      const adminCount = await prisma.user.count({ where: { role: 'ADMIN' } });
+      if (adminCount <= 1) {
+        return res.status(400).json({ success: false, message: 'Cannot delete the last admin' });
+      }
+    }
+
+    const transferReason = 'Seller account deleted by admin';
+
+    await prisma.$transaction(async (tx) => {
+      await tx.plant.updateMany({
+        where: { sellerId: id },
+        data: {
+          sellerId: req.session.user.id,
+          deletedAt: new Date(),
+          deletedReason: transferReason
+        }
+      });
+
+      await tx.user.delete({ where: { id } });
+    });
+
+    res.json({ success: true });
+  })
+);
+
 app.get(
   '/api/admin/plants',
   requireRole('ADMIN'),
@@ -1477,6 +1520,9 @@ app.use((err, req, res, next) => {
   } else if (prismaCode === 'P2002') {
     status = 409;
     message = 'Already exists';
+  } else if (prismaCode === 'P2003') {
+    status = 409;
+    message = 'Cannot complete action due to related records';
   } else if (err?.message === 'Only image uploads are allowed') {
     status = 400;
     message = err.message;
