@@ -1,5 +1,7 @@
 # GreenLeaf Nursery (Resume-Ready)
 
+Live Demo: https://plant-nursery-system.onrender.com
+
 Small e-commerce style demo with:
 - Node.js + Express
 - Prisma + Postgres (Neon/Supabase recommended)
@@ -26,6 +28,7 @@ Open `http://localhost:3000`.
 Copy `.env.example` -> `.env`.
 
 - `DATABASE_URL` (required): Postgres connection string (Neon/Supabase)
+- `CLOUDINARY_*` (optional, recommended for hosting): store uploaded plant images in Cloudinary (persistent on free hosting)
 - `SESSION_SECRET` (recommended): random long string
 - `PAYMENT_PROVIDER`: `fake` (dev demo) or `razorpay` (real)
 - Google OAuth (required for login):
@@ -70,7 +73,12 @@ Free tier note: Render free plan does not provide persistent disks, so use a hos
 5. Environment variables:
    - `NODE_ENV=production`
    - `DATABASE_URL=postgresql://...` (Neon/Supabase connection string)
-   - `UPLOAD_DIR=/tmp/uploads` (uploads are ephemeral on free tier)
+   - `UPLOAD_DIR=/tmp/uploads` (temporary upload dir; not persistent on free tier)
+   - Optional (recommended for persistent plant images):
+     - `CLOUDINARY_CLOUD_NAME=...`
+     - `CLOUDINARY_API_KEY=...`
+     - `CLOUDINARY_API_SECRET=...`
+     - `CLOUDINARY_FOLDER=plant-nursery-system`
    - `SESSION_SECRET=...`
    - `GOOGLE_CLIENT_ID=...`
    - `GOOGLE_CLIENT_SECRET=...`

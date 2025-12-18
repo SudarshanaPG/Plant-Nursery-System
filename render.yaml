@@ -14,6 +14,14 @@ services:
         sync: false
       - key: UPLOAD_DIR
         value: /tmp/uploads
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: CLOUDINARY_FOLDER
+        value: plant-nursery-system
       - key: SESSION_SECRET
         generateValue: true
       - key: GOOGLE_CLIENT_ID

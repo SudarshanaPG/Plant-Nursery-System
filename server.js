@@ -37,6 +37,24 @@ const uploadDir = process.env.UPLOAD_DIR
     : path.join(__dirname, 'uploads');
 fs.mkdirSync(uploadDir, { recursive: true });
 
+const cloudinary =
+  process.env.CLOUDINARY_CLOUD_NAME &&
+  process.env.CLOUDINARY_API_KEY &&
+  process.env.CLOUDINARY_API_SECRET
+    ? (() => {
+        const cloudinaryClient = require('cloudinary').v2;
+        cloudinaryClient.config({
+          cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+          api_key: process.env.CLOUDINARY_API_KEY,
+          api_secret: process.env.CLOUDINARY_API_SECRET,
+          secure: true
+        });
+        return cloudinaryClient;
+      })()
+    : null;
+
+const cloudinaryFolder = String(process.env.CLOUDINARY_FOLDER || 'plant-nursery-system').trim();
+
 const SESSION_SECRET = process.env.SESSION_SECRET || 'dev-insecure-secret';
 if (!process.env.SESSION_SECRET) {
   console.warn('[config] SESSION_SECRET not set. Using an insecure dev default.');
@@ -227,6 +245,24 @@ const requireSellerPage = asyncHandler(async (req, res, next) => {
 
 const isValidImageMime = (mimetype) =>
   ['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(String(mimetype || ''));
+
+const storePlantImage = async (file) => {
+  if (!file) throw new Error('Missing upload');
+
+  const localUrlPath = `/uploads/${file.filename}`;
+  if (!cloudinary) return localUrlPath;
+
+  const filePath = String(file.path || path.join(uploadDir, file.filename));
+  try {
+    const uploaded = await cloudinary.uploader.upload(filePath, {
+      folder: cloudinaryFolder || undefined,
+      resource_type: 'image'
+    });
+    return uploaded?.secure_url || uploaded?.url || localUrlPath;
+  } finally {
+    await fs.promises.unlink(filePath).catch(() => {});
+  }
+};
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
@@ -1002,6 +1038,14 @@ app.post(
       return res.status(400).json({ success: false, message: parsed.error.issues[0]?.message });
     }
 
+    let imagePath;
+    try {
+      imagePath = await storePlantImage(req.file);
+    } catch (err) {
+      console.error('[upload-plant] image upload failed:', err?.message || err);
+      return res.status(500).json({ success: false, message: 'Image upload failed' });
+    }
+
     const sellerId = req.session.user.id;
     const created = await prisma.plant.create({
       data: {
@@ -1010,7 +1054,7 @@ app.post(
         care: parsed.data.care,
         price: parsed.data.price,
         stock: parsed.data.stock,
-        imagePath: `/uploads/${req.file.filename}`,
+        imagePath,
         sellerId
       },
       include: { seller: { select: { email: true } } }
