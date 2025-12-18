@@ -7,6 +7,8 @@ Small e-commerce style demo with:
 - Prisma + Postgres (Neon/Supabase recommended)
 - Cookie-based sessions stored in DB (no JWT)
 - Google OAuth-only login for customer/seller/admin
+- Multi-category catalog: Plants / Chemicals & Manure / Tools
+- Seller dashboard: listings, stock, payouts (80/20 split), multi-photo uploads (Cloudinary supported)
 - Static `public/` HTML/CSS/JS frontend + admin/seller dashboards
 
 ## Quickstart (Windows / PowerShell)

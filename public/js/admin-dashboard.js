@@ -57,6 +57,15 @@ function renderSummaryCard(title, lines) {
   return div;
 }
 
+function formatMoney(value) {
+  const numberValue = Number(value || 0);
+  try {
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(numberValue);
+  } catch {
+    return `INR ${numberValue.toFixed(2)}`;
+  }
+}
+
 async function loadSummary() {
   const summary = await fetchJson('/api/admin/summary', { cache: 'no-store' });
   if (!summary || typeof summary !== 'object' || typeof summary.users !== 'object' || !summary.users) {
@@ -83,6 +92,17 @@ async function loadSummary() {
       Object.entries(summary.orders.byStatus || {}).map(([status, count]) => `${status}: ${count}`)
     )
   );
+
+  if (summary.revenue) {
+    container.appendChild(
+      renderSummaryCard('Platform Revenue (PAID/FULFILLED)', [
+        `Paid orders: ${summary.revenue.paidOrders || 0}`,
+        `Gross sales: ${formatMoney(summary.revenue.grossSales || 0)}`,
+        `Platform fee (20%): ${formatMoney(summary.revenue.platformFee || 0)}`,
+        `Seller payout (80%): ${formatMoney(summary.revenue.sellerPayout || 0)}`
+      ])
+    );
+  }
 }
 
 async function loadUsers() {
@@ -239,6 +259,7 @@ async function loadPlants() {
         <tr>
           <td>${p.id}</td>
           <td>${escapeHtml(p.name)}</td>
+          <td>${escapeHtml(p.category || '')}</td>
           <td>${escapeHtml(p.sellerEmail || '')}</td>
           <td>${p.price}</td>
           <td>${p.stock}</td>
@@ -263,6 +284,7 @@ async function loadPlants() {
           <tr>
             <th>ID</th>
             <th>Name</th>
+            <th>Category</th>
             <th>Seller</th>
             <th>Price</th>
             <th>Stock</th>
@@ -428,7 +450,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       await fetchJson('/logout', { method: 'POST' });
     } catch {}
-    window.location.href = 'admin-login.html';
+    window.location.href = '/';
   };
 
   document.querySelectorAll('.admin-tabs [data-tab]').forEach((btn) => {

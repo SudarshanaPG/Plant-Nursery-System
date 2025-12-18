@@ -19,6 +19,10 @@ const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
+const SELLER_PAYOUT_RATE = 0.8;
+const PLATFORM_FEE_RATE = 1 - SELLER_PAYOUT_RATE;
+const PAID_ORDER_STATUSES = ['PAID', 'FULFILLED'];
+
 if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
 }
@@ -78,6 +82,14 @@ const adminEmails = new Set(
 );
 
 const isAdminEmail = (email) => adminEmails.has(String(email || '').trim().toLowerCase());
+
+const parseProductCategory = (value) => {
+  const normalized = String(value || '').trim().toUpperCase();
+  if (normalized === 'PLANT') return 'PLANT';
+  if (normalized === 'CHEMICAL') return 'CHEMICAL';
+  if (normalized === 'TOOL') return 'TOOL';
+  return null;
+};
 
 const sanitizeNextPath = (value) => {
   const raw = String(value || '').trim();
@@ -264,6 +276,23 @@ const storePlantImage = async (file) => {
   }
 };
 
+const storePlantImages = async (files) => {
+  const list = Array.isArray(files) ? files.filter(Boolean) : [];
+  if (!list.length) throw new Error('Missing upload');
+  const urls = [];
+  for (const file of list) {
+    urls.push(await storePlantImage(file));
+  }
+  return urls;
+};
+
+const cleanupUploadedFiles = async (files) => {
+  const list = Array.isArray(files) ? files.filter(Boolean) : [];
+  await Promise.all(
+    list.map((file) => fs.promises.unlink(String(file.path || path.join(uploadDir, file.filename))).catch(() => {}))
+  );
+};
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
   filename: (req, file, cb) => {
@@ -413,6 +442,8 @@ app.get('/admin-dashboard.html', requireAdminPage, (req, res) => {
 });
 
 app.get('/plants.html', requireUserPage, (req, res) => res.sendFile(path.join(publicDir, 'plants.html')));
+app.get('/chemicals.html', requireUserPage, (req, res) => res.sendFile(path.join(publicDir, 'chemicals.html')));
+app.get('/tools.html', requireUserPage, (req, res) => res.sendFile(path.join(publicDir, 'tools.html')));
 app.get('/plant-detail.html', requireUserPage, (req, res) => res.sendFile(path.join(publicDir, 'plant-detail.html')));
 app.get('/cart.html', requireUserPage, (req, res) => res.sendFile(path.join(publicDir, 'cart.html')));
 app.get('/order.html', requireUserPage, (req, res) => res.sendFile(path.join(publicDir, 'order.html')));
@@ -599,7 +630,11 @@ const adminDisableSchema = z
 const adminPlantUpdateSchema = z
   .object({
     name: z.string().trim().min(1).optional(),
-    size: z.string().trim().min(1).optional(),
+    category: z.enum(['PLANT', 'CHEMICAL', 'TOOL']).optional(),
+    size: z
+      .union([z.string().trim().min(1), z.null()])
+      .optional()
+      .transform((v) => (typeof v === 'string' ? (v && v.length ? v : null) : v)),
     care: z.string().trim().min(1).optional(),
     price: z.coerce.number().int().nonnegative().optional(),
     stock: z.coerce.number().int().nonnegative().optional(),
@@ -617,15 +652,24 @@ app.get(
   '/api/admin/summary',
   requireRole('ADMIN'),
   asyncHandler(async (req, res) => {
-    const [usersTotal, usersDisabled, usersByRole, plantsActive, plantsDeleted, ordersByStatus] =
+    const [usersTotal, usersDisabled, usersByRole, plantsActive, plantsDeleted, ordersByStatus, paidOrders] =
       await Promise.all([
         prisma.user.count(),
         prisma.user.count({ where: { disabledAt: { not: null } } }),
         prisma.user.groupBy({ by: ['role'], _count: { _all: true } }),
         prisma.plant.count({ where: { deletedAt: null } }),
         prisma.plant.count({ where: { deletedAt: { not: null } } }),
-        prisma.order.groupBy({ by: ['status'], _count: { _all: true } })
+        prisma.order.groupBy({ by: ['status'], _count: { _all: true } }),
+        prisma.order.aggregate({
+          where: { status: { in: PAID_ORDER_STATUSES } },
+          _count: { _all: true },
+          _sum: { total: true }
+        })
       ]);
+
+    const grossSales = Number(paidOrders?._sum?.total || 0);
+    const platformFee = Number((grossSales * PLATFORM_FEE_RATE).toFixed(2));
+    const sellerPayout = Number((grossSales * SELLER_PAYOUT_RATE).toFixed(2));
 
     res.json({
       users: {
@@ -639,6 +683,12 @@ app.get(
       },
       orders: {
         byStatus: Object.fromEntries(ordersByStatus.map((r) => [r.status, r._count._all]))
+      },
+      revenue: {
+        paidOrders: Number(paidOrders?._count?._all || 0),
+        grossSales,
+        platformFee,
+        sellerPayout
       }
     });
   })
@@ -797,12 +847,19 @@ app.get(
       plants.map((p) => ({
         id: p.id,
         name: p.name,
+        category: p.category,
         size: p.size,
         care: p.care,
         price: p.price,
         stock: p.stock,
         sold: p.sold,
         imagePath: p.imagePath,
+        imageUrls:
+          Array.isArray(p.imageUrls) && p.imageUrls.length
+            ? p.imageUrls
+            : p.imagePath
+              ? [p.imagePath]
+              : [],
         sellerId: p.sellerId,
         sellerEmail: p.seller?.email,
         deletedAt: p.deletedAt,
@@ -823,6 +880,15 @@ app.put(
 
     const parsed = adminPlantUpdateSchema.safeParse(req.body || {});
     if (!parsed.success) return res.status(400).json({ success: false, message: 'Invalid payload' });
+
+    const current = await prisma.plant.findUnique({ where: { id } });
+    if (!current) return res.status(404).json({ success: false, message: 'Plant not found' });
+
+    const nextCategory = parsed.data.category || current.category;
+    const nextSize = Object.prototype.hasOwnProperty.call(parsed.data, 'size') ? parsed.data.size : current.size;
+    if (nextCategory === 'PLANT' && !nextSize) {
+      return res.status(400).json({ success: false, message: 'Size is required for plants.' });
+    }
 
     const updated = await prisma.plant.update({
       where: { id },
@@ -963,10 +1029,17 @@ app.put(
 const toPlantResponse = (plant) => ({
   id: plant.id,
   name: plant.name,
+  category: plant.category,
   size: plant.size,
   care: plant.care,
   price: plant.price,
-  imagePath: plant.imagePath,
+  imagePath: plant.imagePath || (Array.isArray(plant.imageUrls) ? plant.imageUrls[0] : null),
+  imageUrls:
+    Array.isArray(plant.imageUrls) && plant.imageUrls.length
+      ? plant.imageUrls
+      : plant.imagePath
+        ? [plant.imagePath]
+        : [],
   sellerName: plant.seller?.email,
   sold: plant.sold,
   stock: plant.stock
@@ -977,8 +1050,9 @@ app.get(
   requireAuth,
   asyncHandler(async (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
+    const requestedCategory = parseProductCategory(req.query?.category);
     const plants = await prisma.plant.findMany({
-      where: { deletedAt: null },
+      where: { deletedAt: null, category: requestedCategory || 'PLANT' },
       orderBy: { createdAt: 'desc' },
       include: { seller: { select: { email: true } } }
     });
@@ -990,8 +1064,9 @@ app.get(
   '/plants',
   requireAuth,
   asyncHandler(async (req, res) => {
+    const requestedCategory = parseProductCategory(req.query?.category);
     const plants = await prisma.plant.findMany({
-      where: { deletedAt: null },
+      where: { deletedAt: null, ...(requestedCategory ? { category: requestedCategory } : {}) },
       orderBy: { createdAt: 'desc' },
       include: { seller: { select: { email: true } } }
     });
@@ -1019,7 +1094,13 @@ app.get(
 
 const plantCreateSchema = z.object({
   name: z.string().trim().min(1),
-  size: z.string().trim().min(1),
+  category: z.enum(['PLANT', 'CHEMICAL', 'TOOL']).optional(),
+  size: z
+    .string()
+    .trim()
+    .min(1)
+    .optional()
+    .transform((v) => (v && v.length ? v : null)),
   care: z.string().trim().min(1),
   price: z.coerce.number().int().nonnegative(),
   stock: z.coerce.number().int().nonnegative()
@@ -1028,23 +1109,37 @@ const plantCreateSchema = z.object({
 app.post(
   '/upload-plant',
   requireRole('SELLER'),
-  upload.single('image'),
+  upload.fields([
+    { name: 'images', maxCount: 5 },
+    { name: 'image', maxCount: 1 }
+  ]),
   asyncHandler(async (req, res) => {
-    if (!req.file) return res.status(400).json({ success: false, message: 'Image upload failed' });
+    const files = [
+      ...((req.files && Array.isArray(req.files.images) ? req.files.images : []) || []),
+      ...((req.files && Array.isArray(req.files.image) ? req.files.image : []) || [])
+    ];
+    if (!files.length) {
+      return res.status(400).json({ success: false, message: 'Image upload failed' });
+    }
 
     const quantityRaw = req.body?.stock ?? req.body?.quantity;
     const parsed = plantCreateSchema.safeParse({ ...req.body, stock: quantityRaw });
     if (!parsed.success) {
       return res.status(400).json({ success: false, message: parsed.error.issues[0]?.message });
     }
+    const category = parsed.data.category || 'PLANT';
+    if (category === 'PLANT' && !parsed.data.size) {
+      return res.status(400).json({ success: false, message: 'Size is required for plants.' });
+    }
 
-    let imagePath;
+    let imageUrls;
     try {
-      imagePath = await storePlantImage(req.file);
+      imageUrls = await storePlantImages(files);
     } catch (err) {
       console.error('[upload-plant] image upload failed:', err?.message || err);
       return res.status(500).json({ success: false, message: 'Image upload failed' });
     }
+    const imagePath = imageUrls[0] || null;
 
     const sellerId = req.session.user.id;
     const created = await prisma.plant.create({
@@ -1055,6 +1150,8 @@ app.post(
         price: parsed.data.price,
         stock: parsed.data.stock,
         imagePath,
+        imageUrls,
+        category,
         sellerId
       },
       include: { seller: { select: { email: true } } }
@@ -1080,7 +1177,11 @@ app.get(
 const plantUpdateSchema = z
   .object({
     name: z.string().trim().min(1).optional(),
-    size: z.string().trim().min(1).optional(),
+    category: z.enum(['PLANT', 'CHEMICAL', 'TOOL']).optional(),
+    size: z
+      .union([z.string().trim().min(1), z.null()])
+      .optional()
+      .transform((v) => (typeof v === 'string' ? (v && v.length ? v : null) : v)),
     care: z.string().trim().min(1).optional(),
     price: z.coerce.number().int().nonnegative().optional(),
     stock: z.coerce.number().int().nonnegative().optional(),
@@ -1104,6 +1205,12 @@ app.put(
       return res.status(403).json({ success: false });
     }
 
+    const nextCategory = parsed.data.category || plant.category;
+    const nextSize = Object.prototype.hasOwnProperty.call(parsed.data, 'size') ? parsed.data.size : plant.size;
+    if (nextCategory === 'PLANT' && !nextSize) {
+      return res.status(400).json({ success: false, message: 'Size is required for plants.' });
+    }
+
     const updated = await prisma.plant.update({
       where: { id },
       data: parsed.data,
@@ -1114,31 +1221,169 @@ app.put(
   })
 );
 
+app.delete(
+  '/api/seller/products/:id',
+  requireRole('SELLER'),
+  asyncHandler(async (req, res) => {
+    const id = Number.parseInt(req.params.id, 10);
+    if (!Number.isFinite(id)) return res.status(400).json({ success: false, message: 'Invalid id' });
+
+    const plant = await prisma.plant.findUnique({ where: { id } });
+    if (!plant || plant.deletedAt) return res.status(404).json({ success: false, message: 'Not found' });
+    if (plant.sellerId !== req.session.user.id) {
+      return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+
+    const reason = String(req.body?.reason || 'Deleted by seller').trim().slice(0, 200) || 'Deleted by seller';
+    const updated = await prisma.plant.update({
+      where: { id },
+      data: { deletedAt: new Date(), deletedReason: reason }
+    });
+
+    res.json({ success: true, plant: toPlantResponse(updated) });
+  })
+);
+
+app.post(
+  '/api/seller/products/:id/images',
+  requireRole('SELLER'),
+  upload.array('images', 5),
+  asyncHandler(async (req, res) => {
+    const id = Number.parseInt(req.params.id, 10);
+    if (!Number.isFinite(id)) {
+      await cleanupUploadedFiles(req.files);
+      return res.status(400).json({ success: false, message: 'Invalid id' });
+    }
+
+    const plant = await prisma.plant.findUnique({ where: { id } });
+    if (!plant || plant.deletedAt) {
+      await cleanupUploadedFiles(req.files);
+      return res.status(404).json({ success: false, message: 'Not found' });
+    }
+    if (plant.sellerId !== req.session.user.id) {
+      await cleanupUploadedFiles(req.files);
+      return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+
+    const existing =
+      Array.isArray(plant.imageUrls) && plant.imageUrls.length
+        ? plant.imageUrls
+        : plant.imagePath
+          ? [plant.imagePath]
+          : [];
+
+    const files = Array.isArray(req.files) ? req.files : [];
+    if (!files.length) return res.status(400).json({ success: false, message: 'No images uploaded' });
+    if (existing.length + files.length > 5) {
+      await cleanupUploadedFiles(files);
+      return res.status(400).json({ success: false, message: 'Max 5 photos allowed per product.' });
+    }
+
+    let addedUrls;
+    try {
+      addedUrls = await storePlantImages(files);
+    } catch (err) {
+      console.error('[seller-images] upload failed:', err?.message || err);
+      return res.status(500).json({ success: false, message: 'Image upload failed' });
+    }
+
+    const nextUrls = [...existing, ...addedUrls];
+    const primary = nextUrls[0] || null;
+
+    const updated = await prisma.plant.update({
+      where: { id },
+      data: { imageUrls: nextUrls, imagePath: primary || undefined }
+    });
+
+    res.json({ success: true, plant: toPlantResponse(updated) });
+  })
+);
+
+app.post(
+  '/api/seller/products/:id/images/remove',
+  requireRole('SELLER'),
+  asyncHandler(async (req, res) => {
+    const id = Number.parseInt(req.params.id, 10);
+    if (!Number.isFinite(id)) return res.status(400).json({ success: false, message: 'Invalid id' });
+
+    const url = String(req.body?.url || '').trim();
+    if (!url) return res.status(400).json({ success: false, message: 'Missing url' });
+
+    const plant = await prisma.plant.findUnique({ where: { id } });
+    if (!plant || plant.deletedAt) return res.status(404).json({ success: false, message: 'Not found' });
+    if (plant.sellerId !== req.session.user.id) {
+      return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+
+    const current =
+      Array.isArray(plant.imageUrls) && plant.imageUrls.length
+        ? plant.imageUrls
+        : plant.imagePath
+          ? [plant.imagePath]
+          : [];
+
+    const nextUrls = current.filter((u) => String(u) !== url);
+    const nextPrimary = nextUrls[0] || null;
+
+    const updated = await prisma.plant.update({
+      where: { id },
+      data: { imageUrls: nextUrls, imagePath: nextPrimary }
+    });
+
+    res.json({ success: true, plant: toPlantResponse(updated) });
+  })
+);
+
 app.get(
   '/api/my-dashboard',
   requireRole('SELLER'),
   asyncHandler(async (req, res) => {
-    const plants = await prisma.plant.findMany({
-      where: { sellerId: req.session.user.id, deletedAt: null },
-      orderBy: { createdAt: 'desc' }
-    });
+    const sellerId = req.session.user.id;
 
-    const dashboard = plants.map((p) => {
-      const booked = p.sold > 0 ? p.sold : '--';
-      const profit = p.sold > 0 ? (p.price * p.sold * 0.5).toFixed(2) : '--';
-      return {
-        id: p.id,
-        name: p.name,
-        size: p.size,
-        price: p.price,
-        booked,
-        profit,
-        imagePath: p.imagePath,
-        stock: p.stock
-      };
-    });
+    const [products, paidItems] = await Promise.all([
+      prisma.plant.findMany({
+        where: { sellerId, deletedAt: null },
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.orderItem.findMany({
+        where: {
+          plant: { sellerId },
+          order: { status: { in: PAID_ORDER_STATUSES } }
+        },
+        select: { plantId: true, quantity: true, subtotal: true }
+      })
+    ]);
 
-    res.json(dashboard);
+    const statsByPlantId = new Map();
+    let grossSales = 0;
+    let unitsSold = 0;
+
+    for (const item of paidItems) {
+      const plantId = item.plantId;
+      const entry = statsByPlantId.get(plantId) || { units: 0, gross: 0 };
+      entry.units += item.quantity;
+      entry.gross += item.subtotal;
+      statsByPlantId.set(plantId, entry);
+      grossSales += item.subtotal;
+      unitsSold += item.quantity;
+    }
+
+    const platformFee = Number((grossSales * PLATFORM_FEE_RATE).toFixed(2));
+    const sellerPayout = Number((grossSales * SELLER_PAYOUT_RATE).toFixed(2));
+
+    res.json({
+      summary: { grossSales, platformFee, sellerPayout, unitsSold },
+      products: products.map((p) => {
+        const stats = statsByPlantId.get(p.id) || { units: 0, gross: 0 };
+        return {
+          ...toPlantResponse(p),
+          soldUnits: stats.units,
+          grossRevenue: stats.gross,
+          platformFee: Number((stats.gross * PLATFORM_FEE_RATE).toFixed(2)),
+          sellerPayout: Number((stats.gross * SELLER_PAYOUT_RATE).toFixed(2))
+        };
+      })
+    });
   })
 );
 
@@ -1182,7 +1427,7 @@ const buildCartForTx = async (tx, entries) => {
       unitPrice: plant.price,
       subtotal,
       plantName: plant.name,
-      imagePath: plant.imagePath
+      imagePath: plant.imagePath || (Array.isArray(plant.imageUrls) ? plant.imageUrls[0] : null)
     });
   }
 
@@ -1237,7 +1482,7 @@ app.post(
                 unitPrice: plant.price,
                 subtotal: total,
                 plantName: plant.name,
-                imagePath: plant.imagePath
+                imagePath: plant.imagePath || (Array.isArray(plant.imageUrls) ? plant.imageUrls[0] : null)
               }
             ]
           }

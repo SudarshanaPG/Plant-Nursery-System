@@ -25,6 +25,12 @@ enum PaymentMethod {
   RAZORPAY
 }
 
+enum ProductCategory {
+  PLANT
+  CHEMICAL
+  TOOL
+}
+
 model User {
   id           Int      @id @default(autoincrement())
   email        String   @unique
@@ -49,10 +55,12 @@ model User {
 model Plant {
   id        Int      @id @default(autoincrement())
   name      String
-  size      String
+  category  ProductCategory @default(PLANT)
+  size      String?
   care      String
   price     Int
   imagePath String?
+  imageUrls String[] @default([])
   stock     Int
   sold      Int      @default(0)
   deletedAt DateTime?
@@ -67,6 +75,7 @@ model Plant {
 
   @@index([sellerId])
   @@index([deletedAt])
+  @@index([category])
 }
 
 model Order {

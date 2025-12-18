@@ -1,4 +1,15 @@
 document.addEventListener('DOMContentLoaded', async () => {
+  const logoutLink = document.getElementById('sellerLogout');
+  if (logoutLink) {
+    logoutLink.onclick = async (e) => {
+      e.preventDefault();
+      try {
+        await fetch('/logout', { method: 'POST' });
+      } catch {}
+      window.location.href = '/';
+    };
+  }
+
   const status = document.getElementById('sellerStatus');
   const setStatus = (msg) => {
     if (status) status.textContent = msg || '';
@@ -20,4 +31,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ignore
   }
 });
-

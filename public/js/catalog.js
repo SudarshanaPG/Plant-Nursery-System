@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
+  const category = String(document.body?.dataset?.category || 'PLANT').toUpperCase();
+
   let me = null;
   try {
     const res = await fetch('/api/me', { cache: 'no-store' });
@@ -10,32 +12,39 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   if (!me) {
-    window.location.href = `/auth/google?next=${encodeURIComponent('/plants.html')}`;
+    window.location.href = `/auth/google?next=${encodeURIComponent(location.pathname + location.search)}`;
     return;
   }
 
-  fetch('/data/plants.json?ts=' + Date.now())
+  const container = document.getElementById('plants-container');
+  if (!container) return;
+
+  const url = `/data/plants.json?category=${encodeURIComponent(category)}&ts=${Date.now()}`;
+
+  fetch(url)
     .then((response) => {
       if (!response.ok) throw new Error('Network response was not ok');
       return response.json();
     })
-    .then((plants) => {
-      const container = document.getElementById('plants-container');
-      if (!container) return alert('Something went wrong loading the page. Please refresh.');
-
+    .then((items) => {
       container.innerHTML = '';
 
-      plants.forEach((plant) => {
+      if (!Array.isArray(items) || items.length === 0) {
+        container.innerHTML = "<p style='text-align:center;'>No items available yet.</p>";
+        return;
+      }
+
+      items.forEach((item) => {
         const card = document.createElement('div');
         card.className = 'plant-card';
 
         card.innerHTML = `
-          <img src="${plant.imagePath}" alt="${plant.name}" />
-          <h3>${plant.name}</h3>
-          <p><strong>Price:</strong> ₹${plant.price}</p>
-          <p><strong>Stock:</strong> ${plant.stock}</p>
-          <button class="book-now" data-id="${plant.id}">Book Now</button>
-          <button class="add-to-cart" data-id="${plant.id}">Add to Cart</button>
+          <img src="${item.imagePath || ''}" alt="${item.name || 'Item'}" />
+          <h3>${item.name || 'Untitled'}</h3>
+          <p><strong>Price:</strong> INR ${item.price}</p>
+          <p><strong>Stock:</strong> ${item.stock}</p>
+          <button class="book-now" data-id="${item.id}">View</button>
+          <button class="add-to-cart" data-id="${item.id}">Add to Cart</button>
         `;
 
         container.appendChild(card);
@@ -44,10 +53,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.querySelectorAll('.book-now').forEach((btn) => {
         btn.onclick = () => {
           const id = btn.getAttribute('data-id');
-          if (!me) {
-            window.location.href = `/auth/google?next=${encodeURIComponent(`/plant-detail.html?id=${id}`)}`;
-            return;
-          }
           window.location.href = `plant-detail.html?id=${id}`;
         };
       });
@@ -55,23 +60,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.querySelectorAll('.add-to-cart').forEach((btn) => {
         btn.onclick = () => {
           const id = btn.getAttribute('data-id');
-          if (!me) {
-            window.location.href = `/auth/google?next=${encodeURIComponent('/plants.html')}`;
-            return;
-          }
-
           const cartKey = `cart_${me.email}`;
           const cart = JSON.parse(localStorage.getItem(cartKey) || '{}');
           cart[id] = (cart[id] || 0) + 1;
           localStorage.setItem(cartKey, JSON.stringify(cart));
-
           alert('Added to cart.');
         };
       });
     })
     .catch((error) => {
-      console.error('Error loading plants:', error);
-      const container = document.getElementById('plants-container');
-      if (container) container.innerHTML = '<p>Could not load plants.</p>';
+      console.error('Error loading catalog:', error);
+      container.innerHTML = '<p>Could not load items.</p>';
     });
 });
+
