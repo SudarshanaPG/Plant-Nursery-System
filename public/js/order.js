@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const loadCatalog = async () => {
     const cached = JSON.parse(localStorage.getItem('catalog') || '[]');
     if (Array.isArray(cached) && cached.length) return cached;
-    const res = await fetch('/plants?ts=' + Date.now(), { cache: 'no-store' });
+    const res = await fetch('/catalog?ts=' + Date.now(), { cache: 'no-store' });
     return await res.json();
   };
 
@@ -114,8 +114,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const data = await res.json();
         if (data.success) {
           localStorage.setItem('latestOrder', JSON.stringify(invoicePayload));
-          localStorage.removeItem(`cart_${me.email}`);
-          sessionStorage.removeItem('cart');
           window.location.href = data.short_url;
         } else {
           alert(data.message || 'Could not create payment link.');
@@ -149,4 +147,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 });
-

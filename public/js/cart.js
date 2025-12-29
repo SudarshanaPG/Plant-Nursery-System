@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   let catalog = [];
   try {
-    const res = await fetch('/plants?ts=' + Date.now(), { cache: 'no-store' });
+    const res = await fetch('/catalog?ts=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to load catalog');
     catalog = await res.json();
   } catch (err) {
@@ -101,4 +101,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.location.href = 'order.html';
   };
 });
-

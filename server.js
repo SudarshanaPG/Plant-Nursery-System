@@ -1061,12 +1061,27 @@ app.get(
 );
 
 app.get(
+  '/catalog',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    const requestedCategory = parseProductCategory(req.query?.category);
+    const products = await prisma.plant.findMany({
+      where: { deletedAt: null, ...(requestedCategory ? { category: requestedCategory } : {}) },
+      orderBy: { createdAt: 'desc' },
+      include: { seller: { select: { email: true } } }
+    });
+    res.json(products.map(toPlantResponse));
+  })
+);
+
+app.get(
   '/plants',
   requireAuth,
   asyncHandler(async (req, res) => {
     const requestedCategory = parseProductCategory(req.query?.category);
     const plants = await prisma.plant.findMany({
-      where: { deletedAt: null, ...(requestedCategory ? { category: requestedCategory } : {}) },
+      where: { deletedAt: null, category: requestedCategory || 'PLANT' },
       orderBy: { createdAt: 'desc' },
       include: { seller: { select: { email: true } } }
     });

@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const container = document.getElementById('plants-container');
   if (!container) return;
 
-  const url = `/data/plants.json?category=${encodeURIComponent(category)}&ts=${Date.now()}`;
+  const url = `/catalog?category=${encodeURIComponent(category)}&ts=${Date.now()}`;
 
   fetch(url)
     .then((response) => {
@@ -73,4 +73,3 @@ document.addEventListener('DOMContentLoaded', async () => {
       container.innerHTML = '<p>Could not load items.</p>';
     });
 });
-
