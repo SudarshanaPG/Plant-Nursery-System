@@ -83,7 +83,7 @@ async function loadSummary() {
   );
 
   container.appendChild(
-    renderSummaryCard('Plants', [`Active: ${summary.plants.active}`, `Deleted: ${summary.plants.deleted}`])
+    renderSummaryCard('Products', [`Active: ${summary.plants.active}`, `Deleted: ${summary.plants.deleted}`])
   );
 
   container.appendChild(
