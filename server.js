@@ -418,45 +418,59 @@ app.use(
 
 const publicDir = path.join(__dirname, 'public');
 
+const sendPublicFile = (res, filename) => {
+  res.setHeader('Cache-Control', 'no-store');
+  return res.sendFile(path.join(publicDir, filename));
+};
+
 app.get(
   '/',
   asyncHandler(async (req, res) => {
     const sessionUser = req.session?.user;
-    if (!sessionUser?.id) return res.sendFile(path.join(publicDir, 'index.html'));
+    if (!sessionUser?.id) return sendPublicFile(res, 'index.html');
 
     const user = await prisma.user.findUnique({ where: { id: sessionUser.id } });
     if (!user || user.disabledAt) {
       req.session?.destroy(() => {});
-      return res.sendFile(path.join(publicDir, 'index.html'));
+      return sendPublicFile(res, 'index.html');
     }
 
     req.session.user = { id: user.id, email: user.email, name: user.name, role: user.role };
     if (user.role === 'ADMIN') return res.redirect('/admin-dashboard.html');
 
-    return res.sendFile(path.join(publicDir, 'index.html'));
+    return sendPublicFile(res, 'index.html');
   })
 );
 
 app.get('/admin-dashboard.html', requireAdminPage, (req, res) => {
-  res.sendFile(path.join(publicDir, 'admin-dashboard.html'));
+  sendPublicFile(res, 'admin-dashboard.html');
 });
 
-app.get('/plants.html', requireUserPage, (req, res) => res.sendFile(path.join(publicDir, 'plants.html')));
-app.get('/chemicals.html', requireUserPage, (req, res) => res.sendFile(path.join(publicDir, 'chemicals.html')));
-app.get('/tools.html', requireUserPage, (req, res) => res.sendFile(path.join(publicDir, 'tools.html')));
-app.get('/plant-detail.html', requireUserPage, (req, res) => res.sendFile(path.join(publicDir, 'plant-detail.html')));
-app.get('/cart.html', requireUserPage, (req, res) => res.sendFile(path.join(publicDir, 'cart.html')));
-app.get('/order.html', requireUserPage, (req, res) => res.sendFile(path.join(publicDir, 'order.html')));
-app.get('/invoice.html', requireUserPage, (req, res) => res.sendFile(path.join(publicDir, 'invoice.html')));
-app.get('/fake-pay.html', requireUserPage, (req, res) => res.sendFile(path.join(publicDir, 'fake-pay.html')));
+app.get('/plants.html', requireUserPage, (req, res) => sendPublicFile(res, 'plants.html'));
+app.get('/chemicals.html', requireUserPage, (req, res) => sendPublicFile(res, 'chemicals.html'));
+app.get('/tools.html', requireUserPage, (req, res) => sendPublicFile(res, 'tools.html'));
+app.get('/plant-detail.html', requireUserPage, (req, res) => sendPublicFile(res, 'plant-detail.html'));
+app.get('/cart.html', requireUserPage, (req, res) => sendPublicFile(res, 'cart.html'));
+app.get('/order.html', requireUserPage, (req, res) => sendPublicFile(res, 'order.html'));
+app.get('/invoice.html', requireUserPage, (req, res) => sendPublicFile(res, 'invoice.html'));
+app.get('/fake-pay.html', requireUserPage, (req, res) => sendPublicFile(res, 'fake-pay.html'));
 app.get(
   '/seller-dashboard.html',
   requireSellerPage,
-  (req, res) => res.sendFile(path.join(publicDir, 'seller-dashboard.html'))
+  (req, res) => sendPublicFile(res, 'seller-dashboard.html')
 );
-app.get('/upload-plant.html', requireSellerPage, (req, res) => res.sendFile(path.join(publicDir, 'upload-plant.html')));
+app.get('/upload-plant.html', requireSellerPage, (req, res) => sendPublicFile(res, 'upload-plant.html'));
 
-app.use(express.static(publicDir));
+app.use(
+  express.static(publicDir, {
+    setHeaders: (res, filePath) => {
+      const normalized = String(filePath || '').toLowerCase();
+      if (normalized.endsWith('.html') || normalized.endsWith('.js') || normalized.endsWith('.css')) {
+        res.setHeader('Cache-Control', 'no-store');
+      }
+    }
+  })
+);
 app.use('/uploads', express.static(uploadDir));
 
 app.get('/healthz', (req, res) => res.status(200).json({ ok: true }));
@@ -839,7 +853,9 @@ app.get(
   '/api/admin/plants',
   requireRole('ADMIN'),
   asyncHandler(async (req, res) => {
+    const requestedCategory = parseProductCategory(req.query?.category);
     const plants = await prisma.plant.findMany({
+      where: requestedCategory ? { category: requestedCategory } : undefined,
       orderBy: { createdAt: 'desc' },
       include: { seller: { select: { id: true, email: true } } }
     });

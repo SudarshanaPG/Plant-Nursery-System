@@ -621,6 +621,27 @@ nav {
   margin: 20px 0 10px;
 }
 
+.admin-filters {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 10px 0 20px;
+}
+
+.admin-filters label {
+  font-weight: 600;
+  color: #0d3b2e;
+}
+
+.admin-filters select {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background: #ffffff;
+}
+
 .admin-table {
   width: 100%;
   border-collapse: collapse;

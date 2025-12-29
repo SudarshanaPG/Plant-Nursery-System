@@ -1,6 +1,7 @@
 const $ = (id) => document.getElementById(id);
 
 let currentAdminUser = null;
+let activeTab = 'summary';
 
 async function fetchJson(url, options) {
   const res = await fetch(url, options);
@@ -23,6 +24,7 @@ function escapeHtml(value) {
 }
 
 function showTab(tab) {
+  activeTab = tab;
   document.querySelectorAll('.admin-tab').forEach((el) => (el.style.display = 'none'));
   const active = $(`tab-${tab}`);
   if (active) active.style.display = '';
@@ -249,7 +251,11 @@ async function loadUsers() {
 }
 
 async function loadPlants() {
-  const plants = await fetchJson('/api/admin/plants', { cache: 'no-store' });
+  const categorySelect = $('adminProductCategory');
+  const categoryValue = categorySelect ? String(categorySelect.value || '').trim() : 'PLANT';
+  const params = new URLSearchParams({ ts: String(Date.now()) });
+  if (categoryValue) params.set('category', categoryValue);
+  const plants = await fetchJson(`/api/admin/plants?${params.toString()}`, { cache: 'no-store' });
   const container = $('plantsTable');
 
   const rows = plants
@@ -322,7 +328,7 @@ async function loadPlants() {
   document.querySelectorAll('[data-plant-delete]').forEach((btn) => {
     btn.onclick = async () => {
       const id = btn.getAttribute('data-plant-delete');
-      if (!confirm('Delete this plant? (It will be hidden from customers)')) return;
+      if (!confirm('Delete this product? (It will be hidden from customers)')) return;
       const reason = prompt('Delete reason (optional):', '') || '';
       try {
         await fetchJson(`/api/admin/plants/${id}`, {
@@ -452,6 +458,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch {}
     window.location.href = '/';
   };
+
+  const categorySelect = $('adminProductCategory');
+  if (categorySelect) {
+    categorySelect.onchange = async () => {
+      if (activeTab !== 'plants') return;
+      setError('');
+      try {
+        await loadPlants();
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+  }
 
   document.querySelectorAll('.admin-tabs [data-tab]').forEach((btn) => {
     btn.onclick = async () => {
