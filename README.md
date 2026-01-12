@@ -1,4 +1,4 @@
-# GreenLeaf Nursery (Resume-Ready)
+# GreenLeaf Nursery
 
 Live Demo: https://plant-nursery-system.onrender.com
 
