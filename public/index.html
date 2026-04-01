@@ -6,10 +6,12 @@
   <title>Plant Nursery System (DEMO)</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
-
-  <header>
+<body class="forest-page landing-page">
+  <header class="site-header">
+    <span class="section-eyebrow">Forest-grown marketplace</span>
     <h1>Welcome to GreenLeaf Nursery</h1>
+    <p>Plants, tools, and care essentials shaped like they rose straight out of the canopy.</p>
+    <div id="user-action-btn" class="top-right-button"></div>
     <nav>
       <a href="plants.html" class="nav-link">Plants</a>
       <a href="chemicals.html" class="nav-link">Chemicals &amp; Manure</a>
@@ -17,15 +19,14 @@
       <a href="cart.html" class="nav-link">My Cart</a>
     </nav>
     <div class="demo-banner">Plant Nursery System (DEMO)</div>
-
-    <div id="user-action-btn" class="top-right-button"></div>
   </header>
 
-  <section class="intro">
-    <h2>Your One Stop Green Shop</h2>
+  <section class="intro forest-panel">
+    <span class="section-eyebrow">Nature-first browsing</span>
+    <h2>A nursery that feels rooted in the forest</h2>
     <p class="article">
-      Demo marketplace for plants and gardening essentials. Sign in with Google to browse products, add to cart,
-      and place orders. Sellers can list products, manage stock, and track payouts from the seller dashboard.
+      Browse plants, tools, and garden care essentials inside a softer, more tactile storefront. Sign in with Google
+      to build your cart, place orders, and explore seller listings without the brittle demo feel the old UI had.
     </p>
 
     <div style="margin: 2em 0; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
@@ -54,7 +55,8 @@
     </div>
   </section>
 
+  <script src="/vendor/motion.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/index.js"></script>
 </body>
 </html>
-

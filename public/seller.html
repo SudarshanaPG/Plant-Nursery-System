@@ -4,12 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Plant Nursery System (DEMO) - Seller Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
-
-  <header>
+<body class="forest-page seller-page">
+  <header class="site-header">
     <h1>Seller Portal</h1>
     <nav>
       <a href="index.html" class="nav-link">Home</a>
@@ -24,15 +22,18 @@
     <form>
       <h2>Seller Access</h2>
       <p style="text-align:center;">
-        This demo uses Google sign-in only. Seller access is granted by an admin (set your role to <strong>SELLER</strong>).
+        This demo uses Google sign-in only. Seller access is granted by an admin after your role is switched to
+        <strong>SELLER</strong>.
       </p>
-      <a href="/auth/google?next=/seller-dashboard.html" class="cta-button" style="text-align:center;"
-        >Continue with Google</a
-      >
+      <a href="/auth/google?next=/seller-dashboard.html" class="cta-button" style="text-align:center;">
+        Continue with Google
+      </a>
       <p id="sellerStatus" style="color:#1b4d3e; text-align:center;"></p>
     </form>
   </section>
 
+  <script src="/vendor/motion.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/seller-portal.js"></script>
 </body>
 </html>

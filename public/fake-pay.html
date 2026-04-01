@@ -4,11 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Plant Nursery System (DEMO) - Demo Payment</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
-  <header>
+<body class="forest-page payment-page">
+  <header class="site-header">
     <h1>Demo Payment</h1>
     <nav>
       <a href="plants.html" class="nav-link">Browse Plants</a>
@@ -21,7 +20,7 @@
     <form>
       <h2 style="text-align:center;">Fake Razorpay (Dev Only)</h2>
       <p style="text-align:center;">
-        This page simulates an online payment so you can test without ngrok/webhooks.
+        This page simulates an online payment so you can test without ngrok or webhooks.
       </p>
       <p id="payRef" style="text-align:center; color:#1b4d3e; font-weight:bold;"></p>
       <button id="payBtn" type="button" class="cta-button">Pay Now (Simulate)</button>
@@ -30,6 +29,8 @@
     </form>
   </section>
 
+  <script src="/vendor/motion.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/fake-pay.js"></script>
 </body>
 </html>

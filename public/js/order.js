@@ -1,9 +1,96 @@
+const CHECKOUT_PROFILE_KEY = 'greenleaf:checkout-profile';
+
+const escapeHtml = (value) =>
+  String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+
+const formatMoney = (value) => {
+  const numberValue = Number(value || 0);
+  try {
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(numberValue);
+  } catch {
+    return `INR ${numberValue.toFixed(2)}`;
+  }
+};
+
+const getCheckoutProfile = () => {
+  try {
+    return JSON.parse(localStorage.getItem(CHECKOUT_PROFILE_KEY) || '{}');
+  } catch {
+    return {};
+  }
+};
+
+const saveCheckoutProfile = (profile) => {
+  try {
+    localStorage.setItem(CHECKOUT_PROFILE_KEY, JSON.stringify(profile));
+  } catch {
+    // ignore storage failures
+  }
+};
+
+const loadCatalog = async () => {
+  const cached = JSON.parse(localStorage.getItem('catalog') || '[]');
+  try {
+    const res = await fetch(`/catalog?ts=${Date.now()}`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Failed to load catalog');
+    const catalog = await res.json();
+    if (Array.isArray(catalog)) {
+      localStorage.setItem('catalog', JSON.stringify(catalog));
+      return catalog;
+    }
+  } catch (error) {
+    console.error('Failed to load catalog:', error);
+  }
+  return Array.isArray(cached) ? cached : [];
+};
+
+const composeAddress = (profile) =>
+  [
+    `${profile.recipientName} | ${profile.phone}`,
+    profile.addressLine1,
+    profile.addressLine2,
+    `${profile.city}, ${profile.state} ${profile.postalCode}`,
+    profile.landmark ? `Landmark: ${profile.landmark}` : '',
+    profile.deliveryNote ? `Delivery note: ${profile.deliveryNote}` : ''
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+const normalisePhone = (value) => String(value || '').replace(/[^\d+]/g, '');
+
+const syncPaymentChoices = () => {
+  document.querySelectorAll('.payment-choice').forEach((choice) => {
+    const input = choice.querySelector('input[type="radio"]');
+    choice.classList.toggle('is-selected', Boolean(input?.checked));
+  });
+};
+
+const renderEmptyState = (itemsDiv, totalDiv, form, button) => {
+  itemsDiv.innerHTML = `
+    <div class="empty-state">
+      <p>No items are available to confirm right now.</p>
+      <a href="cart.html" class="cta-button secondary">Return to cart</a>
+    </div>
+  `;
+  totalDiv.textContent = 'Total: INR 0.00';
+  if (button) button.disabled = true;
+  if (form) form.querySelectorAll('input, textarea, button').forEach((element) => (element.disabled = true));
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
+  const ui = window.GreenLeafUI;
   const itemsDiv = document.getElementById('items');
   const totalDiv = document.getElementById('total');
+  const form = document.getElementById('checkoutForm');
   const placeOrderButton = document.getElementById('place-order');
+  const orderStatus = document.getElementById('orderStatus');
 
-  if (!itemsDiv || !totalDiv || !placeOrderButton) return;
+  if (!itemsDiv || !totalDiv || !form || !placeOrderButton) return;
 
   let me = null;
   try {
@@ -20,83 +107,160 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  const cart = JSON.parse(sessionStorage.getItem('cart') || '{}');
-  const cartEntries = Object.entries(cart);
-
-  const loadCatalog = async () => {
-    const cached = JSON.parse(localStorage.getItem('catalog') || '[]');
-    if (Array.isArray(cached) && cached.length) return cached;
-    const res = await fetch('/catalog?ts=' + Date.now(), { cache: 'no-store' });
-    return await res.json();
-  };
-
-  let catalog = [];
-  try {
-    catalog = await loadCatalog();
-    if (Array.isArray(catalog)) localStorage.setItem('catalog', JSON.stringify(catalog));
-  } catch (err) {
-    console.error('Failed to load catalog:', err);
-  }
+  const cartKey = `cart_${me.email}`;
+  const cart = JSON.parse(sessionStorage.getItem('cart') || localStorage.getItem(cartKey) || '{}');
+  const catalog = await loadCatalog();
+  const catalogById = new Map((Array.isArray(catalog) ? catalog : []).map((item) => [String(item.id), item]));
 
   let total = 0;
   const orderItems = [];
+  const validCart = {};
 
   itemsDiv.innerHTML = '';
 
-  for (const [id, qtyRaw] of cartEntries) {
-    const item = Array.isArray(catalog) ? catalog.find((p) => String(p.id) === String(id)) : null;
+  Object.entries(cart).forEach(([id, qtyRaw]) => {
+    const item = catalogById.get(String(id));
     const quantity = Number.parseInt(qtyRaw, 10) || 0;
-    if (!item || quantity < 1) continue;
+    if (!item || quantity < 1) return;
 
-    const itemTotal = quantity * item.price;
+    const availableStock = Number.parseInt(item.stock, 10) || 0;
+    if (availableStock < 1) return;
+
+    const safeQuantity = Math.min(quantity, availableStock);
+    const itemTotal = safeQuantity * Number(item.price || 0);
     total += itemTotal;
-    orderItems.push({ name: item.name, price: item.price, quantity });
+    validCart[id] = safeQuantity;
+    orderItems.push({ name: item.name, price: item.price, quantity: safeQuantity });
 
     const category = String(item.category || 'PLANT').toUpperCase();
-
-    const card = document.createElement('div');
+    const card = document.createElement('article');
     card.className = 'plant-card';
     card.innerHTML = `
-      <img src="${item.imagePath || ''}" alt="${item.name || 'Item'}">
-      <h3>${item.name || 'Untitled'}</h3>
-      <p><strong>Category:</strong> ${category}</p>
-      <p><strong>Price:</strong> INR ${item.price} x ${quantity} = INR ${itemTotal}</p>
-      ${category === 'PLANT' && item.size ? `<p><strong>Size:</strong> ${item.size}</p>` : ''}
-      ${item.care ? `<p><strong>Info:</strong> ${item.care}</p>` : ''}
-      <p><strong>Available Stock:</strong> ${item.stock}</p>
+      <img src="${escapeHtml(item.imagePath || '')}" alt="${escapeHtml(item.name || 'Item')}">
+      <h3>${escapeHtml(item.name || 'Untitled')}</h3>
+      <p><strong>Category:</strong> ${escapeHtml(category)}</p>
+      <p><strong>Bundle:</strong> ${escapeHtml(formatMoney(item.price))} x ${safeQuantity}</p>
+      ${category === 'PLANT' && item.size ? `<p><strong>Size:</strong> ${escapeHtml(item.size)}</p>` : ''}
+      ${item.care ? `<p><strong>Info:</strong> ${escapeHtml(item.care)}</p>` : ''}
+      <p><strong>Subtotal:</strong> ${escapeHtml(formatMoney(itemTotal))}</p>
     `;
     itemsDiv.appendChild(card);
-  }
+  });
 
-  if (orderItems.length === 0) {
-    itemsDiv.innerHTML = `<p style="color:red;">No items to confirm.</p>`;
-    totalDiv.innerText = `Total: INR 0`;
-    placeOrderButton.disabled = true;
+  localStorage.setItem(cartKey, JSON.stringify(validCart));
+  sessionStorage.setItem('cart', JSON.stringify(validCart));
+
+  if (!orderItems.length) {
+    renderEmptyState(itemsDiv, totalDiv, form, placeOrderButton);
     return;
   }
 
-  totalDiv.innerText = `Total: INR ${total}`;
+  totalDiv.textContent = `Total: ${formatMoney(total)}`;
 
-  placeOrderButton.addEventListener('click', async () => {
-    const address = document.getElementById('address')?.value?.trim() || '';
+  const savedProfile = getCheckoutProfile();
+  const fieldMap = {
+    recipientName: document.getElementById('recipientName'),
+    phone: document.getElementById('phone'),
+    addressLine1: document.getElementById('addressLine1'),
+    addressLine2: document.getElementById('addressLine2'),
+    city: document.getElementById('city'),
+    state: document.getElementById('state'),
+    postalCode: document.getElementById('postalCode'),
+    landmark: document.getElementById('landmark'),
+    deliveryNote: document.getElementById('deliveryNote')
+  };
+
+  if (fieldMap.recipientName) fieldMap.recipientName.value = savedProfile.recipientName || me.name || '';
+  if (fieldMap.phone) fieldMap.phone.value = savedProfile.phone || '';
+  if (fieldMap.addressLine1) fieldMap.addressLine1.value = savedProfile.addressLine1 || '';
+  if (fieldMap.addressLine2) fieldMap.addressLine2.value = savedProfile.addressLine2 || '';
+  if (fieldMap.city) fieldMap.city.value = savedProfile.city || '';
+  if (fieldMap.state) fieldMap.state.value = savedProfile.state || '';
+  if (fieldMap.postalCode) fieldMap.postalCode.value = savedProfile.postalCode || '';
+  if (fieldMap.landmark) fieldMap.landmark.value = savedProfile.landmark || '';
+  if (fieldMap.deliveryNote) fieldMap.deliveryNote.value = savedProfile.deliveryNote || '';
+
+  document.querySelectorAll('input[name="payment"]').forEach((radio) => {
+    radio.addEventListener('change', syncPaymentChoices);
+  });
+  syncPaymentChoices();
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (orderStatus) orderStatus.textContent = '';
+
+    const profile = {
+      recipientName: String(fieldMap.recipientName?.value || '').trim(),
+      phone: normalisePhone(fieldMap.phone?.value),
+      addressLine1: String(fieldMap.addressLine1?.value || '').trim(),
+      addressLine2: String(fieldMap.addressLine2?.value || '').trim(),
+      city: String(fieldMap.city?.value || '').trim(),
+      state: String(fieldMap.state?.value || '').trim(),
+      postalCode: String(fieldMap.postalCode?.value || '').trim(),
+      landmark: String(fieldMap.landmark?.value || '').trim(),
+      deliveryNote: String(fieldMap.deliveryNote?.value || '').trim()
+    };
+
+    if (!profile.recipientName || !profile.phone || !profile.addressLine1 || !profile.city || !profile.state || !profile.postalCode) {
+      ui?.notify({
+        title: 'Missing delivery details',
+        message: 'Complete the required address fields before placing the order.',
+        tone: 'warning'
+      });
+      return;
+    }
+
+    if (!/^\+?\d{10,15}$/.test(profile.phone)) {
+      ui?.notify({
+        title: 'Check the mobile number',
+        message: 'Enter a valid 10 to 15 digit contact number.',
+        tone: 'warning'
+      });
+      fieldMap.phone?.focus();
+      return;
+    }
+
+    if (!/^[A-Za-z0-9 -]{4,10}$/.test(profile.postalCode)) {
+      ui?.notify({
+        title: 'Check the postal code',
+        message: 'Use a valid PIN or ZIP code.',
+        tone: 'warning'
+      });
+      fieldMap.postalCode?.focus();
+      return;
+    }
+
+    saveCheckoutProfile(profile);
+
     const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value;
+    if (!paymentMethod) {
+      ui?.notify({
+        title: 'Choose a payment method',
+        message: 'Select how you want to complete the payment.',
+        tone: 'warning'
+      });
+      return;
+    }
 
-    if (!address) return alert('Please enter a shipping address.');
-    if (!paymentMethod) return alert('Please choose a payment method.');
-
+    const address = composeAddress(profile);
     const invoicePayload = {
       items: orderItems,
       total,
       paymentMethod: paymentMethod === 'online' ? 'Online' : 'Cash on Delivery',
-      address
+      address,
+      customer: { recipientName: profile.recipientName, phone: profile.phone },
+      clearCartOnInvoice: paymentMethod === 'online',
+      cartKey
     };
 
     const orderPayload = {
       email: me.email,
       address,
-      cart,
+      cart: validCart,
       payment: invoicePayload.paymentMethod
     };
+
+    placeOrderButton.disabled = true;
 
     if (paymentMethod === 'online') {
       try {
@@ -105,22 +269,30 @@ document.addEventListener('DOMContentLoaded', async () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             amount: total,
-            name: me.email,
+            name: profile.recipientName,
             email: me.email,
             cart: orderPayload.cart,
             address: orderPayload.address
           })
         });
-        const data = await res.json();
-        if (data.success) {
-          localStorage.setItem('latestOrder', JSON.stringify(invoicePayload));
-          window.location.href = data.short_url;
-        } else {
-          alert(data.message || 'Could not create payment link.');
-        }
-      } catch (err) {
-        console.error('Payment error:', err);
-        alert('Payment error');
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.success) throw new Error(data.message || 'Could not create payment link.');
+
+        localStorage.setItem('latestOrder', JSON.stringify(invoicePayload));
+        ui?.queueNotification({
+          title: 'Payment link ready',
+          message: 'Complete payment to finish rooting this order.',
+          tone: 'success'
+        });
+        window.location.href = data.short_url;
+      } catch (error) {
+        console.error('Payment error:', error);
+        ui?.notify({
+          title: 'Payment link failed',
+          message: error.message || 'Could not create payment link.',
+          tone: 'error'
+        });
+        placeOrderButton.disabled = false;
       }
       return;
     }
@@ -131,19 +303,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderPayload)
       });
-      const data = await res.json();
-      if (data.success) {
-        localStorage.setItem('latestOrder', JSON.stringify(invoicePayload));
-        localStorage.removeItem(`cart_${me.email}`);
-        sessionStorage.removeItem('cart');
-        alert('Order placed successfully!');
-        window.location.href = 'invoice.html';
-      } else {
-        alert('Order failed: ' + (data.message || 'Unknown error'));
-      }
-    } catch (err) {
-      console.error('Order error:', err);
-      alert('Order failed.');
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) throw new Error(data.message || 'Order failed.');
+
+      localStorage.setItem('latestOrder', JSON.stringify(invoicePayload));
+      localStorage.removeItem(cartKey);
+      sessionStorage.removeItem('cart');
+      ui?.queueNotification({
+        title: 'Order rooted',
+        message: 'Your nursery delivery has been scheduled.',
+        tone: 'success'
+      });
+      window.location.href = 'invoice.html';
+    } catch (error) {
+      console.error('Order error:', error);
+      ui?.notify({
+        title: 'Order could not be placed',
+        message: error.message || 'Something went wrong while placing the order.',
+        tone: 'error'
+      });
+      placeOrderButton.disabled = false;
     }
   });
 });

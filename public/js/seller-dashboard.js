@@ -30,6 +30,14 @@ const fetchJson = async (url, options) => {
   return json;
 };
 
+const escapeHtml = (value) =>
+  String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+
 const renderSummary = (summary) => {
   const el = document.getElementById('sellerSummary');
   if (!el) return;
@@ -65,7 +73,7 @@ const createThumb = ({ url, onRemove }) => {
 
   const btn = document.createElement('button');
   btn.type = 'button';
-  btn.textContent = '×';
+  btn.textContent = 'x';
   btn.title = 'Remove photo';
   btn.onclick = onRemove;
   wrapper.appendChild(btn);
@@ -77,14 +85,14 @@ const buildProductCard = (product, { onUpdated, onDeleted, setError }) => {
   const card = document.createElement('div');
   card.className = 'plant-card';
 
-  const mainImgUrl = product.imagePath || product.imageUrls?.[0] || '';
+  const mainImgUrl = escapeHtml(product.imagePath || product.imageUrls?.[0] || '');
   const category = String(product.category || 'PLANT').toUpperCase();
 
   card.innerHTML = `
-    <img src="${mainImgUrl}" alt="${product.name || 'Listing'}">
-    <h3>${product.name}</h3>
+    <img src="${mainImgUrl}" alt="${escapeHtml(product.name || 'Listing')}">
+    <h3>${escapeHtml(product.name || 'Untitled')}</h3>
     <p><strong>Category:</strong> ${categoryLabel(category)}</p>
-    ${category === 'PLANT' ? `<p><strong>Size:</strong> ${product.size || '--'}</p>` : ''}
+    ${category === 'PLANT' ? `<p><strong>Size:</strong> ${escapeHtml(product.size || '--')}</p>` : ''}
     <p><strong>Price:</strong> ${formatMoney(product.price)}</p>
     <p><strong>Stock:</strong> <span data-stock>${product.stock}</span></p>
     <p><strong>Sold (PAID/FULFILLED):</strong> <span data-sold>${product.soldUnits || 0}</span></p>
@@ -102,9 +110,18 @@ const buildProductCard = (product, { onUpdated, onDeleted, setError }) => {
       thumbRow.appendChild(
         createThumb({
           url,
-          onRemove: async (e) => {
-            e.preventDefault();
-            if (!confirm('Remove this photo from the listing?')) return;
+          onRemove: async (event) => {
+            event.preventDefault();
+            const confirmed = await window.GreenLeafUI?.confirm(
+              'Remove this photo from the listing?',
+              {
+                title: 'Remove photo',
+                confirmText: 'Remove photo',
+                cancelText: 'Keep it'
+              }
+            );
+            if (!confirmed) return;
+
             setError('');
             try {
               const data = await fetchJson(`/api/seller/products/${product.id}/images/remove`, {
@@ -137,7 +154,7 @@ const buildProductCard = (product, { onUpdated, onDeleted, setError }) => {
       <summary>Manage Listing</summary>
 
       <label>Name</label>
-      <input type="text" data-name value="${product.name || ''}" />
+      <input type="text" data-name value="${escapeHtml(product.name || '')}" />
 
       <label>Category</label>
       <select data-category>
@@ -148,11 +165,11 @@ const buildProductCard = (product, { onUpdated, onDeleted, setError }) => {
 
       <div data-size-wrap>
         <label>Size</label>
-        <input type="text" data-size value="${product.size || ''}" placeholder="e.g. Width/Height or dimensions" />
+        <input type="text" data-size value="${escapeHtml(product.size || '')}" placeholder="e.g. Width/Height or dimensions" />
       </div>
 
       <label>Care / Usage</label>
-      <textarea data-care rows="4" placeholder="Care/usage instructions...">${product.care || ''}</textarea>
+      <textarea data-care rows="4" placeholder="Care/usage instructions...">${escapeHtml(product.care || '')}</textarea>
 
       <label>Price (INR)</label>
       <input type="number" data-price min="0" value="${Number(product.price || 0)}" />
@@ -234,7 +251,6 @@ const buildProductCard = (product, { onUpdated, onDeleted, setError }) => {
       const nextMain = product.imagePath || product.imageUrls?.[0] || '';
       if (img && nextMain) img.src = nextMain;
       card.querySelector('[data-stock]').textContent = String(product.stock);
-
       onUpdated();
     } catch (err) {
       setError(err.message);
@@ -257,11 +273,7 @@ const buildProductCard = (product, { onUpdated, onDeleted, setError }) => {
         body: JSON.stringify({ stock: nextStock })
       });
       const updated = data?.plant;
-      if (updated) {
-        product.stock = updated.stock;
-      } else {
-        product.stock = nextStock;
-      }
+      product.stock = updated?.stock ?? nextStock;
       card.querySelector('[data-stock]').textContent = String(product.stock);
       stockSetInput.value = String(product.stock);
       addStockInput.value = '';
@@ -307,7 +319,16 @@ const buildProductCard = (product, { onUpdated, onDeleted, setError }) => {
   };
 
   manage.querySelector('[data-delete]').onclick = async () => {
-    if (!confirm('Soft delete this listing? It will disappear from browsing but remain in order history.')) return;
+    const confirmed = await window.GreenLeafUI?.confirm(
+      'Soft delete this listing? It will disappear from browsing but remain in order history.',
+      {
+        title: 'Delete listing',
+        confirmText: 'Delete listing',
+        cancelText: 'Keep listing'
+      }
+    );
+    if (!confirmed) return;
+
     setError('');
     try {
       await fetchJson(`/api/seller/products/${product.id}`, {
@@ -327,11 +348,13 @@ const buildProductCard = (product, { onUpdated, onDeleted, setError }) => {
 document.addEventListener('DOMContentLoaded', async () => {
   const logoutLink = document.getElementById('sellerLogout');
   if (logoutLink) {
-    logoutLink.onclick = async (e) => {
-      e.preventDefault();
+    logoutLink.onclick = async (event) => {
+      event.preventDefault();
       try {
         await fetch('/logout', { method: 'POST' });
-      } catch {}
+      } catch {
+        // ignore logout failure
+      }
       window.location.href = '/';
     };
   }
@@ -345,15 +368,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   if (!me || me.role !== 'SELLER') {
-    alert('Please log in as seller.');
+    window.GreenLeafUI?.queueNotification({
+      title: 'Seller access required',
+      message: 'Please log in as a seller to open the dashboard.',
+      tone: 'warning'
+    });
     window.location.href = 'seller.html';
     return;
   }
 
   const errorEl = document.getElementById('dashboardError');
-  const setError = (msg) => {
+  const setError = (message) => {
     if (!errorEl) return;
-    errorEl.textContent = msg || '';
+    errorEl.textContent = message || '';
   };
 
   const container = document.getElementById('dashboardContainer');
@@ -368,7 +395,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const products = Array.isArray(data.products) ? data.products : [];
     if (!products.length) {
-      container.innerHTML = "<p style='text-align:center;'>You haven't listed anything yet.</p>";
+      container.innerHTML = "<div class='empty-state'>You have not listed anything yet.</div>";
       return;
     }
 
@@ -377,7 +404,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const refreshed = await fetchJson('/api/my-dashboard', { cache: 'no-store' });
         renderSummary(refreshed.summary);
       } catch {
-        // ignore
+        // ignore summary refresh failures
       }
     };
 
@@ -385,7 +412,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const card = container.querySelector(`[data-card-id="${id}"]`);
       if (card) card.remove();
       if (!container.children.length) {
-        container.innerHTML = "<p style='text-align:center;'>You haven't listed anything yet.</p>";
+        container.innerHTML = "<div class='empty-state'>You have not listed anything yet.</div>";
       }
       onUpdated();
     };
@@ -405,4 +432,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     container.textContent = 'Error loading dashboard.';
   }
 });
-

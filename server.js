@@ -417,11 +417,17 @@ app.use(
 );
 
 const publicDir = path.join(__dirname, 'public');
+const motionVendorPath = path.join(__dirname, 'node_modules', 'motion', 'dist', 'motion.js');
 
 const sendPublicFile = (res, filename) => {
   res.setHeader('Cache-Control', 'no-store');
   return res.sendFile(path.join(publicDir, filename));
 };
+
+app.get('/vendor/motion.js', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(motionVendorPath);
+});
 
 app.get(
   '/',

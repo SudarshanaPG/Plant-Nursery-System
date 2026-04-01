@@ -6,8 +6,8 @@
   <title>Plant Nursery System (DEMO) - Confirm Order</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
-  <header>
+<body class="forest-page checkout-page">
+  <header class="site-header">
     <h1>Confirm Your Order</h1>
     <nav>
       <a href="index.html" class="nav-link">Home</a>
@@ -19,34 +19,91 @@
     <div class="demo-banner">Plant Nursery System (DEMO)</div>
   </header>
 
-  <section class="plant-section">
-    <!-- Cart Items Display -->
-    <div id="items" class="plant-list"></div>
-
-    <!-- ✅ Add total display -->
-    <div id="total" style="text-align:center; font-weight:bold; margin-top: 10px;"></div>
-
-    <!-- Order Form -->
-    <div class="order-form">
-      <h3 style="text-align:center;">Shipping & Payment</h3>
-
-      <label for="address">Shipping Address:</label>
-      <textarea id="address" rows="3" required placeholder="Enter full delivery address"></textarea>
-
-      <div style="margin-top: 1em;">
-        <strong>Payment Method:</strong><br>
-        <label><input type="radio" name="payment" value="cod" checked> Cash on Delivery</label><br>
-        <label><input type="radio" name="payment" value="online"> Online</label>
+  <main class="plant-section checkout-shell">
+    <section class="checkout-grid">
+      <div class="forest-panel checkout-review">
+        <span class="section-eyebrow">Canopy crate</span>
+        <h2 class="section-title" style="border:none; padding-left:0; margin-top:0;">Review your bundle</h2>
+        <p class="section-copy">Everything in your basket, staged before dispatch.</p>
+        <div id="items" class="plant-grid checkout-items"></div>
+        <div id="total" class="checkout-total"></div>
       </div>
 
-      <div style="text-align:center; margin-top: 20px;">
-        <button id="place-order" class="cta-button">Place Order</button>
-      </div>
+      <aside class="forest-panel checkout-form-panel">
+        <span class="section-eyebrow">Rooted delivery</span>
+        <h2 class="section-title" style="border:none; padding-left:0; margin-top:0;">Where should we send it?</h2>
+        <p class="section-copy">Use a cleaner address flow with structured delivery details and a clearer payment choice.</p>
 
-      <p id="orderStatus" style="text-align:center; color: green; margin-top: 15px;"></p>
-    </div>
-  </section>
+        <form id="checkoutForm" class="checkout-form">
+          <div class="form-grid">
+            <label class="field">
+              <span>Recipient name</span>
+              <input id="recipientName" type="text" autocomplete="name" placeholder="Who should receive this order?" required />
+            </label>
+            <label class="field">
+              <span>Mobile number</span>
+              <input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="10-digit contact number" required />
+            </label>
+            <label class="field field-full">
+              <span>Address line 1</span>
+              <input id="addressLine1" type="text" autocomplete="address-line1" placeholder="House / flat / building and street" required />
+            </label>
+            <label class="field field-full">
+              <span>Address line 2</span>
+              <input id="addressLine2" type="text" autocomplete="address-line2" placeholder="Area, colony, apartment, or office" />
+            </label>
+            <label class="field">
+              <span>City</span>
+              <input id="city" type="text" autocomplete="address-level2" placeholder="City" required />
+            </label>
+            <label class="field">
+              <span>State</span>
+              <input id="state" type="text" autocomplete="address-level1" placeholder="State" required />
+            </label>
+            <label class="field">
+              <span>Postal code</span>
+              <input id="postalCode" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="PIN / ZIP code" required />
+            </label>
+            <label class="field">
+              <span>Landmark</span>
+              <input id="landmark" type="text" placeholder="Nearby landmark (optional)" />
+            </label>
+          </div>
 
+          <label class="field">
+            <span>Delivery note</span>
+            <textarea id="deliveryNote" rows="4" placeholder="Gate code, preferred drop-off time, or planting note"></textarea>
+          </label>
+
+          <div class="field">
+            <span>Payment method</span>
+            <div class="payment-choices" id="paymentChoices">
+              <label class="payment-choice is-selected">
+                <input type="radio" name="payment" value="cod" checked />
+                <div class="payment-copy">
+                  <strong>Cash on delivery</strong>
+                  <span>Useful when you want to inspect the order before payment.</span>
+                </div>
+              </label>
+              <label class="payment-choice">
+                <input type="radio" name="payment" value="online" />
+                <div class="payment-copy">
+                  <strong>Online payment</strong>
+                  <span>Get redirected to the payment link and return with the invoice when complete.</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <button id="place-order" type="submit" class="cta-button">Place order</button>
+          <p id="orderStatus" class="inline-status"></p>
+        </form>
+      </aside>
+    </section>
+  </main>
+
+  <script src="/vendor/motion.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/order.js"></script>
 </body>
 </html>
