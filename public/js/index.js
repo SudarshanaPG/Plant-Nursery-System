@@ -1,6 +1,13 @@
 window.addEventListener('DOMContentLoaded', async () => {
   const container = document.getElementById('user-action-btn');
+  const sellerEntryLink = document.getElementById('heroSellerLink');
   if (!container) return;
+
+  const setSellerEntryVisibility = (visible) => {
+    if (!sellerEntryLink) return;
+    sellerEntryLink.hidden = !visible;
+    sellerEntryLink.setAttribute('aria-hidden', String(!visible));
+  };
 
   const createButton = ({ text, href, kind = 'primary', onClick }) => {
     const button = document.createElement('a');
@@ -46,6 +53,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   container.innerHTML = '';
 
   if (!user) {
+    setSellerEntryVisibility(true);
     container.appendChild(
       createButton({ text: 'Continue with Google', href: '/auth/google?next=/', kind: 'secondary' })
     );
@@ -53,12 +61,14 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   if (user.role === 'SELLER') {
+    setSellerEntryVisibility(false);
     container.appendChild(createButton({ text: 'Seller Dashboard', href: 'seller-dashboard.html' }));
     container.appendChild(createButton({ text: 'Browse Catalog', href: 'plants.html', kind: 'secondary' }));
     container.appendChild(createButton({ text: 'Logout', href: '#', kind: 'danger', onClick: logout }));
     return;
   }
 
+  setSellerEntryVisibility(true);
   container.appendChild(createButton({ text: 'My Cart', href: 'cart.html', kind: 'secondary' }));
   container.appendChild(createButton({ text: 'Logout', href: '#', kind: 'danger', onClick: logout }));
 });
