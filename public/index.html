@@ -7,38 +7,85 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="forest-page landing-page">
-  <header class="site-header">
-    <span class="section-eyebrow">Forest-grown marketplace</span>
-    <h1>Welcome to GreenLeaf Nursery</h1>
-    <p>Plants, tools, and care essentials shaped like they rose straight out of the canopy.</p>
-    <div id="user-action-btn" class="top-right-button"></div>
-    <nav>
-      <a href="plants.html" class="nav-link">Plants</a>
-      <a href="chemicals.html" class="nav-link">Chemicals &amp; Manure</a>
-      <a href="tools.html" class="nav-link">Tools</a>
-      <a href="cart.html" class="nav-link">My Cart</a>
-    </nav>
-    <div class="demo-banner">Plant Nursery System (DEMO)</div>
+  <header class="site-header home-hero">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <h1>Welcome to GreenLeaf Nursery</h1>
+        <p class="hero-lead">
+          Plants, tools, and care essentials arranged like a living nursery floor instead of a generic storefront.
+        </p>
+        <div id="user-action-btn" class="top-right-button hero-actions"></div>
+        <div class="hero-primary-links">
+          <a href="plants.html" class="cta-button">Explore Plants</a>
+          <a href="chemicals.html" class="cta-button secondary">Soil Care &amp; Feed</a>
+          <a href="seller.html" class="cta-button secondary">Become a Seller</a>
+        </div>
+        <nav>
+          <a href="plants.html" class="nav-link">Plants</a>
+          <a href="chemicals.html" class="nav-link">Chemicals &amp; Manure</a>
+          <a href="tools.html" class="nav-link">Tools</a>
+          <a href="cart.html" class="nav-link">My Cart</a>
+        </nav>
+        <div class="demo-banner">Plant Nursery System (DEMO)</div>
+      </div>
+
+      <aside class="hero-canopy" aria-label="Featured nursery atmosphere">
+        <div class="canopy-stack">
+          <article class="canopy-card canopy-card-main">
+            <img src="plant3.jfif" alt="Lush palm leaves" />
+            <div class="canopy-card-copy">
+              <strong>Canopy Corner</strong>
+              <span>Leafy picks for rooms, balconies, and shaded courtyards.</span>
+            </div>
+          </article>
+          <article class="canopy-card canopy-card-small">
+            <img src="plant2.jfif" alt="Peace lily in bloom" />
+            <div class="canopy-chip">Fresh foliage</div>
+          </article>
+          <article class="canopy-card canopy-card-small soil-card">
+            <img src="plant5.jfif" alt="Deep green nursery plant" />
+            <div class="canopy-chip">Forest-grown feel</div>
+          </article>
+        </div>
+        <div class="canopy-metrics">
+          <div class="forest-stat">
+            <strong>Plants</strong>
+            <span>Indoor, balcony, and gifting greens</span>
+          </div>
+          <div class="forest-stat">
+            <strong>Tools &amp; care</strong>
+            <span>Manure, sprays, and garden essentials</span>
+          </div>
+        </div>
+      </aside>
+    </div>
   </header>
 
-  <section class="intro forest-panel">
-    <span class="section-eyebrow">Nature-first browsing</span>
-    <h2>A nursery that feels rooted in the forest</h2>
-    <p class="article">
-      Browse plants, tools, and garden care essentials inside a softer, more tactile storefront. Sign in with Google
-      to build your cart, place orders, and explore seller listings without the brittle demo feel the old UI had.
-    </p>
-
-    <div style="margin: 2em 0; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-      <a href="plants.html" class="cta-button">Browse Plants</a>
-      <a href="chemicals.html" class="cta-button secondary">Browse Chemicals &amp; Manure</a>
-      <a href="tools.html" class="cta-button secondary">Browse Tools</a>
+  <section class="intro forest-panel landing-story">
+    <div class="landing-story-grid">
+      <div class="landing-story-copy">
+        <h2>A denser, greener nursery floor</h2>
+        <p class="article">
+          The experience should feel like moving through a cultivated forest aisle: layered greenery, grounded
+          textures, warmer surfaces, and less wasted empty space. Browse, order, and manage listings inside a UI that
+          feels planted rather than inflated.
+        </p>
+      </div>
+      <div class="landing-story-aside">
+        <article class="forest-mini-card">
+          <strong>Shade-grown browsing</strong>
+          <p>Product cards, forms, and notifications now sit inside warmer botanical surfaces instead of browser-looking blocks.</p>
+        </article>
+        <article class="forest-mini-card">
+          <strong>Rooted checkout</strong>
+          <p>Address and payment collection were rebuilt into a cleaner, modern flow with more structure and better balance.</p>
+        </article>
+        <article class="forest-mini-card">
+          <strong>Canopy motion</strong>
+          <p>Soft floating spores, forest glow, and in-app toasts make the site feel alive without looking detached from the brand.</p>
+        </article>
+      </div>
     </div>
-
-    <div style="margin: 2em 0;">
-      <a href="seller.html" class="cta-button">Become a Seller</a>
-    </div>
-
     <div class="scroll-gallery">
       <div class="scroll-track">
         <img src="plant1.jfif" alt="Snake Plant" />
