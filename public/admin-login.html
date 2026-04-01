@@ -4,11 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Plant Nursery System (DEMO) - Admin Login</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
-  <header>
+<body class="forest-page admin-login-page">
+  <header class="site-header">
     <h1>Admin Portal</h1>
     <nav>
       <a href="index.html" class="nav-link">Home</a>
@@ -23,13 +22,15 @@
       <p style="text-align:center;">
         This demo uses Google sign-in only. Admin access is granted when your email is listed in <code>ADMIN_EMAILS</code>.
       </p>
-      <a href="/auth/google?next=/admin-dashboard.html" class="cta-button" style="text-align:center;"
-        >Continue with Google</a
-      >
+      <a href="/auth/google?next=/admin-dashboard.html" class="cta-button" style="text-align:center;">
+        Continue with Google
+      </a>
       <p id="adminStatus" style="color:#1b4d3e; text-align:center;"></p>
     </form>
   </section>
 
+  <script src="/vendor/motion.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/admin-portal.js"></script>
 </body>
 </html>

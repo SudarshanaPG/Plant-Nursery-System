@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const ui = window.GreenLeafUI;
   const params = new URLSearchParams(window.location.search);
   const paymentLinkId = params.get('pl') || '';
   const token = params.get('token') || '';
@@ -10,8 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (refEl) refEl.textContent = paymentLinkId ? `Reference: ${paymentLinkId}` : '';
 
-  const fail = (msg) => {
-    if (errorEl) errorEl.textContent = msg || 'Something went wrong.';
+  const fail = (message) => {
+    if (errorEl) errorEl.textContent = message || 'Something went wrong.';
+    ui?.notify({
+      title: 'Payment not completed',
+      message: message || 'Something went wrong.',
+      tone: 'error'
+    });
   };
 
   cancelBtn?.addEventListener('click', () => {
@@ -19,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   payBtn?.addEventListener('click', async () => {
-    errorEl.textContent = '';
+    if (errorEl) errorEl.textContent = '';
 
     if (!paymentLinkId || !token) {
       fail('Missing payment reference.');
@@ -43,13 +49,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      ui?.queueNotification({
+        title: 'Payment confirmed',
+        message: 'Your order has been paid and the invoice is ready.',
+        tone: 'success'
+      });
       window.location.href = 'invoice.html';
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       fail('Payment failed.');
       payBtn.disabled = false;
       payBtn.textContent = 'Pay Now (Simulate)';
     }
   });
 });
-

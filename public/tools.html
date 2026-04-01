@@ -6,9 +6,8 @@
   <title>Plant Nursery System (DEMO) - Tools</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body data-category="TOOL">
-
-  <header>
+<body class="forest-page browse-page" data-category="TOOL">
+  <header class="site-header">
     <h1>Tools</h1>
     <nav>
       <a href="index.html" class="nav-link">Home</a>
@@ -20,9 +19,12 @@
     <div class="demo-banner">Plant Nursery System (DEMO)</div>
   </header>
 
-  <section id="plants-container" class="plant-grid"></section>
+  <section class="plant-section">
+    <div id="plants-container" class="plant-grid"></div>
+  </section>
 
+  <script src="/vendor/motion.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/catalog.js"></script>
 </body>
 </html>
-

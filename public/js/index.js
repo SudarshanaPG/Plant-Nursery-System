@@ -1,23 +1,21 @@
-// js/index.js
-
 window.addEventListener('DOMContentLoaded', async () => {
   const container = document.getElementById('user-action-btn');
   if (!container) return;
 
   const createButton = ({ text, href, kind = 'primary', onClick }) => {
-    const btn = document.createElement('a');
-    btn.className = `cta-button${kind === 'secondary' ? ' secondary' : ''}${
+    const button = document.createElement('a');
+    button.className = `cta-button${kind === 'secondary' ? ' secondary' : ''}${
       kind === 'danger' ? ' danger' : ''
     }`;
-    btn.textContent = text;
-    btn.href = href || '#';
+    button.textContent = text;
+    button.href = href || '#';
     if (onClick) {
-      btn.onclick = async (e) => {
-        e.preventDefault();
+      button.addEventListener('click', async (event) => {
+        event.preventDefault();
         await onClick();
-      };
+      });
     }
-    return btn;
+    return button;
   };
 
   let user = null;
@@ -35,15 +33,17 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  container.innerHTML = '';
-
   const logout = async () => {
     try {
       await fetch('/logout', { method: 'POST' });
-    } catch {}
+    } catch {
+      // ignore logout failures
+    }
     localStorage.removeItem('loggedInUser');
     window.location.href = '/';
   };
+
+  container.innerHTML = '';
 
   if (!user) {
     container.appendChild(
@@ -54,10 +54,11 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   if (user.role === 'SELLER') {
     container.appendChild(createButton({ text: 'Seller Dashboard', href: 'seller-dashboard.html' }));
-    container.appendChild(createButton({ text: 'Shop', href: 'plants.html', kind: 'secondary' }));
+    container.appendChild(createButton({ text: 'Browse Catalog', href: 'plants.html', kind: 'secondary' }));
     container.appendChild(createButton({ text: 'Logout', href: '#', kind: 'danger', onClick: logout }));
     return;
   }
 
+  container.appendChild(createButton({ text: 'My Cart', href: 'cart.html', kind: 'secondary' }));
   container.appendChild(createButton({ text: 'Logout', href: '#', kind: 'danger', onClick: logout }));
 });

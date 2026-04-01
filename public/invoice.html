@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Plant Nursery System (DEMO) - Invoice</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-  <header>
+<body class="forest-page invoice-page">
+  <header class="site-header">
     <h1>Order Invoice</h1>
     <nav>
       <a href="index.html" class="nav-link">Home</a>
@@ -18,12 +19,16 @@
     <div class="demo-banner">Plant Nursery System (DEMO)</div>
   </header>
 
-  <div id="invoice" class="plant-listing-card" style="margin: 2em auto; max-width: 700px;"></div>
+  <main class="invoice-shell">
+    <div id="invoice" class="forest-panel"></div>
 
-  <div style="text-align: center; margin-top: 20px;">
-    <button class="cta-button" id="downloadBtn">Download Invoice</button>
-  </div>
+    <div class="cart-summary" style="margin-top: 20px;">
+      <button class="cta-button" id="downloadBtn">Download Invoice</button>
+    </div>
+  </main>
 
+  <script src="/vendor/motion.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/invoice.js"></script>
 </body>
 </html>

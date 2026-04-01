@@ -20,7 +20,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   if (!me || me.role !== 'SELLER') {
-    alert('Please log in as seller.');
+    window.GreenLeafUI?.queueNotification({
+      title: 'Seller access required',
+      message: 'Please log in as a seller to create a listing.',
+      tone: 'warning'
+    });
     window.location.href = 'seller.html';
     return;
   }
@@ -103,6 +107,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (status) status.style.color = data.success ? 'green' : 'crimson';
         if (data.success) {
           if (status) status.textContent = 'Listing created successfully.';
+          window.GreenLeafUI?.notify({
+            title: 'Listing created',
+            message: 'Your new product is now part of the nursery.',
+            tone: 'success'
+          });
           form.reset();
           if (categorySelect) applyCategoryCopy(categorySelect.value);
         } else {
