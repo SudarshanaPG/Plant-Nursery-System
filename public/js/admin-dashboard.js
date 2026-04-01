@@ -54,7 +54,7 @@ function renderSummaryCard(title, lines) {
   div.className = 'card';
   div.innerHTML = `
     <div class="card-content">
-      <div class="section-title" style="border:none; padding-left:0; margin-top:0;">${escapeHtml(title)}</div>
+      <div class="section-title section-title-plain">${escapeHtml(title)}</div>
       ${lines.map((line) => `<div>${escapeHtml(line)}</div>`).join('')}
     </div>
   `;

@@ -20,7 +20,7 @@
 
   <section class="seller-form">
     <form id="plantForm" enctype="multipart/form-data">
-      <h2 style="text-align:center; margin-bottom: 20px;">Register a Product</h2>
+      <h2>Register a Product</h2>
 
       <div class="form-group">
         <label for="category">Category:</label>
@@ -44,9 +44,9 @@
       <div id="plantSizeFields">
         <div class="form-group">
           <label for="widthValue">Width:</label>
-          <div style="display: flex; gap: 10px;">
-            <input type="number" name="widthValue" id="widthValue" placeholder="e.g. 25" required style="flex: 1;" />
-            <select name="widthUnit" id="widthUnit" required style="flex: 1;">
+          <div class="split-inputs">
+            <input type="number" name="widthValue" id="widthValue" placeholder="e.g. 25" required />
+            <select name="widthUnit" id="widthUnit" required>
               <option value="">Select Unit</option>
               <option value="cm">cm</option>
               <option value="inches">inches</option>
@@ -58,9 +58,9 @@
 
         <div class="form-group">
           <label for="heightValue">Height:</label>
-          <div style="display: flex; gap: 10px;">
-            <input type="number" name="heightValue" id="heightValue" placeholder="e.g. 2" required style="flex: 1;" />
-            <select name="heightUnit" id="heightUnit" required style="flex: 1;">
+          <div class="split-inputs">
+            <input type="number" name="heightValue" id="heightValue" placeholder="e.g. 2" required />
+            <select name="heightUnit" id="heightUnit" required>
               <option value="">Select Unit</option>
               <option value="cm">cm</option>
               <option value="inches">inches</option>
@@ -78,7 +78,7 @@
 
       <div class="form-group">
         <label for="care" id="careLabel">Care / Usage Instructions:</label>
-        <textarea name="care" id="care" rows="4" style="width: 100%;" placeholder="e.g. How to maintain / how to use..." required></textarea>
+        <textarea name="care" id="care" rows="4" placeholder="e.g. How to maintain / how to use..." required></textarea>
       </div>
 
       <div class="form-group">
@@ -86,11 +86,9 @@
         <input type="number" name="price" id="price" placeholder="e.g. 500" required min="0" />
       </div>
 
-      <div style="text-align:center;">
-        <button type="submit" class="cta-button">Create Listing</button>
-      </div>
+      <button type="submit" class="cta-button form-cta">Create Listing</button>
 
-      <p id="plantStatus" style="text-align:center; color: green;"></p>
+      <p id="plantStatus" class="form-status"></p>
     </form>
   </section>
 

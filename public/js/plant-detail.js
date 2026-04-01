@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
           </div>
 
-          <h2 class="section-title" style="border:none; padding-left:0; margin-top:18px;">${escapeHtml(item.name || 'Untitled')}</h2>
+          <h2 class="section-title section-title-plain section-title-tight">${escapeHtml(item.name || 'Untitled')}</h2>
           <div class="detail-meta">
             <span class="price-badge">${escapeHtml(formatMoney(item.price))}</span>
             <span class="stat-pill">${item.stock > 0 ? `${escapeHtml(String(item.stock))} in stock` : 'Out of stock'}</span>
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         <aside class="product-buy-panel">
           <span class="section-eyebrow">Quick checkout</span>
-          <h2 class="section-title" style="border:none; padding-left:0; margin-top:0;">Send it to your garden</h2>
+          <h2 class="section-title section-title-plain">Send it to your garden</h2>
           <p class="section-copy">Structured delivery fields, clear payment choice, and a softer order flow.</p>
 
           <form id="productOrderForm" class="checkout-form">
