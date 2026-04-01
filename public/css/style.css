@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Instrument+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
   color-scheme: light;
@@ -40,7 +40,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Instrument Sans', sans-serif;
   color: var(--ink);
   background:
     radial-gradient(circle at top left, rgba(240, 231, 176, 0.6), transparent 30%),
@@ -57,6 +57,38 @@ body.forest-page {
     radial-gradient(circle at 6% 82%, rgba(82, 128, 88, 0.14), transparent 20%),
     radial-gradient(circle at 94% 76%, rgba(114, 156, 101, 0.16), transparent 20%),
     linear-gradient(180deg, #f1f5ea 0%, #deead7 46%, #d1dfcb 100%);
+}
+
+body.browse-page {
+  background:
+    radial-gradient(circle at 9% 16%, rgba(87, 138, 77, 0.24), transparent 16%),
+    radial-gradient(circle at 92% 16%, rgba(240, 221, 170, 0.2), transparent 17%),
+    radial-gradient(circle at 12% 88%, rgba(100, 150, 93, 0.14), transparent 16%),
+    linear-gradient(180deg, #eff4e8 0%, #dde8d7 44%, #cfdec8 100%);
+}
+
+body.product-page,
+body.checkout-page,
+body.cart-page {
+  background:
+    radial-gradient(circle at 14% 12%, rgba(105, 150, 98, 0.18), transparent 17%),
+    radial-gradient(circle at 88% 18%, rgba(239, 220, 170, 0.18), transparent 18%),
+    radial-gradient(circle at 90% 78%, rgba(102, 150, 110, 0.12), transparent 16%),
+    linear-gradient(180deg, #f1f4ea 0%, #e0ead8 48%, #d3e0cb 100%);
+}
+
+body.seller-page,
+body.seller-dashboard-page,
+body.upload-page,
+body.admin-page,
+body.admin-login-page,
+body.payment-page,
+body.invoice-page {
+  background:
+    radial-gradient(circle at 7% 12%, rgba(83, 134, 92, 0.2), transparent 15%),
+    radial-gradient(circle at 93% 20%, rgba(240, 214, 160, 0.18), transparent 16%),
+    radial-gradient(circle at 6% 86%, rgba(93, 134, 92, 0.12), transparent 14%),
+    linear-gradient(180deg, #edf2e6 0%, #d9e6d4 48%, #ccdbc8 100%);
 }
 
 body.landing-page {
@@ -308,6 +340,153 @@ nav {
   margin: 0;
   color: var(--ink-soft);
   line-height: 1.7;
+}
+
+.page-canopy {
+  width: min(var(--max-shell), calc(100% - 24px));
+  margin: 16px auto 0;
+  padding: 18px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top right, rgba(243, 228, 182, 0.18), transparent 22%),
+    linear-gradient(140deg, rgba(27, 74, 50, 0.96), rgba(33, 94, 63, 0.94));
+  border: 1px solid rgba(238, 225, 181, 0.18);
+  box-shadow:
+    0 24px 48px rgba(22, 39, 26, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -16px 26px rgba(10, 28, 18, 0.12);
+  color: #f7f2e6;
+  position: relative;
+  overflow: hidden;
+}
+
+.page-canopy::before,
+.page-canopy::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+}
+
+.page-canopy::before {
+  left: -36px;
+  bottom: -46px;
+  width: 190px;
+  height: 150px;
+  background:
+    radial-gradient(circle at 40% 70%, rgba(90, 147, 94, 0.32), transparent 38%),
+    radial-gradient(circle at 65% 30%, rgba(230, 241, 212, 0.12), transparent 24%);
+  filter: blur(4px);
+}
+
+.page-canopy::after {
+  right: -24px;
+  top: -18px;
+  width: 150px;
+  height: 120px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(241, 228, 184, 0.18), transparent 34%),
+    radial-gradient(circle at 60% 40%, rgba(92, 149, 101, 0.18), transparent 36%);
+}
+
+.page-canopy-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.92fr);
+  gap: 18px;
+  align-items: center;
+}
+
+.page-canopy-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.page-canopy-copy h2 {
+  margin: 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.75rem, 2.8vw, 2.45rem);
+  color: #fff7e7;
+}
+
+.page-canopy-copy p {
+  margin: 8px 0 0;
+  max-width: 54ch;
+  color: rgba(247, 242, 230, 0.82);
+  line-height: 1.58;
+}
+
+.page-canopy-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.page-stat {
+  padding: 10px 13px;
+  border-radius: 18px;
+  background: rgba(248, 244, 232, 0.1);
+  border: 1px solid rgba(236, 226, 190, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.page-stat strong {
+  display: block;
+  margin-bottom: 3px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.12rem;
+}
+
+.page-stat span {
+  color: rgba(247, 242, 230, 0.76);
+  font-size: 0.88rem;
+  line-height: 1.38;
+}
+
+.page-canopy-visual {
+  position: relative;
+  min-height: 204px;
+  padding: 10px;
+  border-radius: 26px;
+  background:
+    linear-gradient(180deg, rgba(248, 243, 227, 0.12), rgba(28, 72, 50, 0.18)),
+    rgba(16, 55, 37, 0.2);
+  border: 1px solid rgba(236, 226, 190, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.page-visual-main,
+.page-visual-float {
+  position: absolute;
+  object-fit: cover;
+  box-shadow: 0 18px 28px rgba(10, 27, 17, 0.24);
+}
+
+.page-visual-main {
+  inset: 12px 54px 12px 12px;
+  border-radius: 24px;
+}
+
+.page-visual-float {
+  width: 120px;
+  height: 90px;
+  right: 10px;
+  top: 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(239, 228, 188, 0.18);
+}
+
+.page-canopy-note {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  padding: 0.38rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(18, 61, 41, 0.78);
+  border: 1px solid rgba(236, 226, 190, 0.16);
+  color: #f7f3e7;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
 }
 
 .intro,
@@ -732,12 +911,18 @@ button:disabled {
 
 .catalog-shell {
   padding: 16px;
+  background:
+    radial-gradient(circle at top right, rgba(125, 169, 105, 0.12), transparent 18%),
+    linear-gradient(180deg, rgba(255, 252, 242, 0.98), rgba(229, 239, 219, 0.94));
 }
 
 .dashboard-hero {
   margin-bottom: 16px;
   padding: 18px 20px;
   text-align: center;
+  background:
+    radial-gradient(circle at top, rgba(242, 225, 175, 0.16), transparent 22%),
+    linear-gradient(180deg, rgba(255, 252, 242, 0.96), rgba(229, 239, 219, 0.92));
 }
 
 .dashboard-hero .section-copy {
@@ -749,6 +934,47 @@ button:disabled {
   display: flex;
   justify-content: center;
   margin-top: 14px;
+}
+
+.browse-page .catalog-shell,
+.seller-dashboard-page .catalog-shell,
+.product-page .plant-detail,
+.cart-page .cart-overview,
+.checkout-page .checkout-review,
+.checkout-page .checkout-form-panel,
+.invoice-page #invoice,
+.seller-page .seller-form form,
+.payment-page .seller-form form,
+.upload-page .seller-form form,
+.admin-login-page .admin-login form,
+.admin-page .admin-section {
+  background:
+    radial-gradient(circle at top right, rgba(125, 169, 105, 0.11), transparent 18%),
+    radial-gradient(circle at bottom left, rgba(223, 190, 122, 0.08), transparent 18%),
+    linear-gradient(180deg, rgba(255, 252, 242, 0.98), rgba(229, 239, 219, 0.93));
+}
+
+.seller-page .seller-form form,
+.admin-login-page .admin-login form,
+.payment-page .seller-form form,
+.upload-page .seller-form form {
+  overflow: hidden;
+}
+
+.seller-page .seller-form form::after,
+.admin-login-page .admin-login form::after,
+.payment-page .seller-form form::after,
+.upload-page .seller-form form::after {
+  content: '';
+  position: absolute;
+  inset: auto -40px -50px auto;
+  width: 180px;
+  height: 160px;
+  background:
+    radial-gradient(circle at 40% 60%, rgba(103, 155, 92, 0.22), transparent 34%),
+    radial-gradient(circle at 60% 35%, rgba(240, 225, 176, 0.18), transparent 26%);
+  filter: blur(4px);
+  pointer-events: none;
 }
 
 .plant-grid {
@@ -767,6 +993,21 @@ button:disabled {
   box-shadow: var(--panel-shadow-soft);
   position: relative;
   transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+
+.plant-card::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 38px;
+  height: 38px;
+  border-radius: 70% 30% 60% 40%;
+  background:
+    linear-gradient(180deg, rgba(115, 167, 92, 0.28), rgba(38, 98, 66, 0.18));
+  opacity: 0.75;
+  transform: rotate(18deg);
+  pointer-events: none;
 }
 
 .plant-card:hover {
@@ -1615,6 +1856,7 @@ button:disabled {
   }
 
   .hero-grid,
+  .page-canopy-grid,
   .landing-story-grid {
     grid-template-columns: 1fr;
   }
@@ -1678,6 +1920,27 @@ button:disabled {
   .hero-canopy {
     min-height: 306px;
     padding: 16px;
+  }
+
+  .page-canopy {
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .page-canopy-copy {
+    text-align: center;
+  }
+
+  .page-canopy-copy p {
+    max-width: none;
+  }
+
+  .page-canopy-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .page-canopy-visual {
+    min-height: 210px;
   }
 
   .canopy-card-main {
@@ -1748,6 +2011,22 @@ button:disabled {
   .catalog-shell,
   .dashboard-hero {
     padding: 14px;
+  }
+
+  .page-canopy {
+    padding: 14px;
+  }
+
+  .page-visual-main {
+    inset: 12px 12px 54px 12px;
+  }
+
+  .page-visual-float {
+    width: 108px;
+    height: 84px;
+    right: 12px;
+    top: auto;
+    bottom: 12px;
   }
 
   .nav-link {
